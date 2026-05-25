@@ -299,7 +299,9 @@ knitr::kable(
 )
 ```
 
-**Wniosek:** Po zastosowaniu SMOTE zbiór treningowy zawiera wyrównany rozkład klas – liczba syntetycznych obserwacji klasy "hit" wzrosła do poziomu klasy większościowej.
+**Wniosek z tabeli:** Podgląd przetworzonych danych potwierdza poprawność transformacji – wszystkie wartości numeryczne zostały wystandaryzowane (bliskie 0, zakres ±2–3), a zmienne kategoryczne zakodowane jako kolumny binarne. Tabela obrazuje również, że SMOTE nie zmienia istniejących obserwacji, lecz dokłada nowe syntetyczne wiersze klasy mniejszościowej, zachowując wiarygodność oryginalnych rekordów.
+
+**Wniosek ogólny:** Po zastosowaniu SMOTE zbiór treningowy zawiera wyrównany rozkład klas – liczba syntetycznych obserwacji klasy "hit" wzrosła do poziomu klasy większościowej.
 Podział warstwowy (stratified split) zapewnia, że proporcja hitów w zbiorze testowym odpowiada proporcji w oryginalnym zbiorze, co gwarantuje wiarygodną ewaluację.
 Standaryzacja zmiennych numerycznych jest niezbędna dla stabilności regresji logistycznej i przyspiesza zbieżność XGBoost.
 Kodowanie One-Hot Encoding zmiennej `track_genre` znacznie zwiększa liczbę predyktorów, ale pozwala modelom drzewiastym efektywnie wykorzystać informację o gatunku muzycznym.
@@ -422,7 +424,9 @@ cv_results %>%
        y = "Średnia wartość metryki (± std. błąd)")
 ```
 
-**Wniosek z kroswalidacji:** Wyniki CV potwierdzają obserwacje z ewaluacji na zbiorze testowym.
+**Wniosek z tabeli CV:** Tabela zestawia wyniki wszystkich pięciu metryk dla każdego modelu w formacie *średnia (±std. błąd)*. Mała wartość std. błędu (zazwyczaj < 0.005) przy każdej metryce świadczy o wysokiej stabilności wyników między foldami – oznacza to, że prezentowane wartości nie są przypadkowym artefaktem jednego podziału danych. Regresja logistyczna dominuje pod względem Recall, lecz jej Precision jest wielokrotnie niższa od modeli drzewiastych, co sygnalizuje nadmierną liczbę fałszywych alarmów.
+
+**Wniosek z wykresu i porównania ogólnego:** Wyniki CV potwierdzają obserwacje z ewaluacji na zbiorze testowym.
 Regresja logistyczna osiąga relatywnie wysokie ROC-AUC, lecz jej F1-Score i precyzja są wyraźnie niższe od modeli drzewiastych, co wskazuje na nadmierne rozszerzenie granicy decyzyjnej po SMOTE.
 Las Losowy i XGBoost wykazują porównywalną stabilność (małe odchylenia std. między foldami), przy czym Las Losowy zwykle uzyskuje nieco lepszy F1-Score.
 Słupki błędu (±1 std. błąd) są wąskie dla wszystkich modeli, co świadczy o spójności wyników między foldami i niskim ryzyku przeuczenia.
@@ -500,6 +504,10 @@ ggplot(threshold_data, aes(x = .threshold, y = .estimate)) +
        x = "Próg odcięcia prawdopodobieństwa (Threshold)",
        y = "Wartość metryki F1-Score")
 ```
+
+**Wniosek z tabeli metryk:** Tabela jednoznacznie pokazuje kompromis między Precision a Recall dla każdego modelu. Regresja logistyczna osiąga bardzo wysokie Recall (wykrywa większość hitów), ale jej Precision jest drastycznie niska – oznacza to, że niemal każdy utwór jest przez nią klasyfikowany jako potencjalny hit, co czyni ją bezużyteczną praktycznie. Las Losowy osiąga najlepszy balans: wyższa Precision przy akceptowalnym Recall przekłada się na najwyższy F1-Score spośród wszystkich modeli.
+
+**Wniosek z tabeli ROC-AUC:** Wartości ROC-AUC powyżej 0.9 dla wszystkich modeli świadczą o tym, że każdy z nich posiada znaczącą zdolność do rankingowania hitów powyżej nie-hitów – jest jednak w tym zakresie mylące. Wysoki AUC regresji logistycznej wynika z jej zdolności do generowania płynnych, dobrze rozłożonych prawdopodobieństw, lecz nie przekłada się to na użyteczną klasyfikację przy progu 0.5. Las Losowy i XGBoost łączą wysoki AUC z lepszą jakością klasyfikacji binarnej, co czyni je zdecydowanie lepszymi modelami dla tego problemu.
 
 ### Kalibracja prawdopodobieństw
 
@@ -681,7 +689,9 @@ plot(rf_parts) +
   theme_minimal()
 ```
 
-**Wniosek:** Test wdrożeniowy pokazuje, że model Lasu Losowego poprawnie zakwalifikował syntetyczny profil "piosenki pop" jako kandydata na hit, przypisując mu wysokie prawdopodobieństwo klasy 1.
+**Wniosek z tabeli predykcji:** Tabela prezentuje wynik klasyfikacji nowej piosenki: predykowaną klasę oraz rozkład prawdopodobieństwa między obiema klasami. Wysokie P(Hit) – znacznie powyżej domyślnego progu 0.5 – oznacza, że model jest pewny swojej decyzji, nie tylko nominalnie przekracza próg. Zestawienie P(Brak hitu) i P(Hit) pokazuje, jak pewnie model lokuje obserwację po stronie klasy pozytywnej, co jest cenną informacją biznesową – im wyższe P(Hit), tym silniejszy "akustyczny sygnał" hitu w danym profilu.
+
+**Wniosek ogólny:** Test wdrożeniowy pokazuje, że model Lasu Losowego poprawnie zakwalifikował syntetyczny profil "piosenki pop" jako kandydata na hit, przypisując mu wysokie prawdopodobieństwo klasy 1.
 Wykres wodospadowy (Waterfall / Break Down) dostarcza wyjaśnienia lokalnego tej konkretnej predykcji: widać, które cechy nowej piosenki (np. niska `instrumentalness`, wysoka `loudness`, gatunek `pop`) "pchnęły" decyzję modelu w kierunku klasy pozytywnej, a które ją hamowały.
 Taka interpretacja czyni model nie tylko narzędziem predykcji, ale też źródłem rekomendacji artystycznych – wytwórnia może na tej podstawie identyfikować, które atrybuty nowo nagranego utworu wymagają korekty, aby zwiększyć jego szanse komercyjne.
 
