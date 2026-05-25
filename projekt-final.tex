@@ -1,0 +1,1669 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+\documentclass[
+]{article}
+\usepackage{xcolor}
+\usepackage[margin=1in]{geometry}
+\usepackage{amsmath,amssymb}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+\usepackage{iftex}
+\ifPDFTeX
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math} % this also loads fontspec
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+\usepackage{lmodern}
+\ifPDFTeX\else
+  % xetex/luatex font selection
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx}
+\makeatletter
+\newsavebox\pandoc@box
+\newcommand*\pandocbounded[1]{% scales image to fit in text height/width
+  \sbox\pandoc@box{#1}%
+  \Gscale@div\@tempa{\textheight}{\dimexpr\ht\pandoc@box+\dp\pandoc@box\relax}%
+  \Gscale@div\@tempb{\linewidth}{\wd\pandoc@box}%
+  \ifdim\@tempb\p@<\@tempa\p@\let\@tempa\@tempb\fi% select the smaller of both
+  \ifdim\@tempa\p@<\p@\scalebox{\@tempa}{\usebox\pandoc@box}%
+  \else\usebox{\pandoc@box}%
+  \fi%
+}
+% Set default figure placement to htbp
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\usepackage{bookmark}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\urlstyle{same}
+\hypersetup{
+  pdftitle={Predykcja hitów muzycznych na podstawie danych Spotify},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+
+\title{Predykcja hitów muzycznych na podstawie danych Spotify}
+\author{}
+\date{\vspace{-2.5em}2026-05-18}
+
+\begin{document}
+\maketitle
+
+\subsection{Wybór zbioru danych}\label{wybuxf3r-zbioru-danych}
+
+Do realizacji projektu wybrano zbiór danych o nazwie \textbf{``Spotify
+Tracks Dataset''} (dostępny m.in. na platformie Kaggle). Zbiór ten
+zawiera wyczerpujące metadane dotyczące tysięcy utworów muzycznych
+dostępnych na platformie Spotify. Obejmuje on zróżnicowane atrybuty, w
+tym parametry akustyczne wyliczane przez algorytmy Spotify (np.
+taneczność, energia, akustyczność), informacje o popularności,
+przynależność do gatunków muzycznych oraz podstawowe dane
+identyfikacyjne (tytuł, artysta, rok wydania). Wybór tego zbioru
+podyktowany jest jego bogactwem w informacje o naturze zarówno
+numerycznej, jak i kategorycznej, co pozwala na zastosowanie szerokiego
+spektrum technik eksploracji danych.
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  Zmienne objaśniane (Target):
+\end{enumerate}
+
+\begin{itemize}
+\item
+  popularity (numeryczna): Skala od 0 do 100 wyliczana przez algorytmy
+  Spotify, oceniająca aktualną popularność utworu (w dużej mierze oparta
+  na całkowitej liczbie odtworzeń oraz tym, jak niedawno miały one
+  miejsce).
+\item
+  is\_hit (kategoryczna/binarna): Zmienna docelowa utworzona sztucznie
+  na potrzeby projektu. Przyjmuje wartość 1 (Hit), jeśli popularity
+  wynosi 75 lub więcej, oraz 0 (Brak hitu) w przeciwnym wypadku.
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{1}
+\tightlist
+\item
+  Cechy psychoakustyczne (skala 0.0 - 1.0):
+\end{enumerate}
+
+\begin{itemize}
+\item
+  danceability: Określa, jak bardzo utwór nadaje się do tańca na
+  podstawie kombinacji elementów muzycznych, takich jak tempo,
+  stabilność rytmu i siła bitu.
+\item
+  energy: Stanowi miarę intensywności i aktywności utworu. Utwory o
+  wysokiej energii są odbierane jako szybkie, głośne i hałaśliwe (np.
+  death metal ma wysoką energię).
+\item
+  acousticness: Wskaźnik określający pewność algorytmu, że utwór ma
+  charakter czysto akustyczny (nieelektroniczny).
+\item
+  instrumentalness: Przewiduje, czy utwór nie zawiera partii wokalnych
+  (słów). Wartości bliskie 1.0 oznaczają utwory czysto instrumentalne.
+\item
+  liveness: Określa prawdopodobieństwo obecności publiczności podczas
+  nagrania. Wyższe wartości wskazują na wykonanie na żywo (live).
+\item
+  speechiness: Wykrywa obecność mówionych słów w nagraniu. Wartości
+  powyżej 0.66 opisują utwory składające się niemal wyłącznie ze słów
+  (np. podcasty, stand-up), natomiast wartości poniżej 0.33 to typowa
+  muzyka z wokalem.
+\item
+  valence: Opisuje muzyczną ``pozytywność'' przekazywaną przez utwór.
+  Utwory o wysokiej walencji brzmią bardziej radośnie, euforycznie,
+  natomiast o niskiej walencji -- smutno, depresyjnie lub gniewnie.
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  Cechy techniczne i kompozycyjne:
+\end{enumerate}
+
+\begin{itemize}
+\item
+  duration\_ms (numeryczna): Czas trwania utworu wyrażony w
+  milisekundach.
+\item
+  loudness (numeryczna): Ogólna głośność utworu w decybelach (dB),
+  uśredniona dla całego nagrania. Zazwyczaj przyjmuje wartości od -60 do
+  0 dB.
+\item
+  tempo (numeryczna): Szacowane tempo utworu w uderzeniach na minutę
+  (BPM).
+\item
+  key (kategoryczna): Tonacja, w jakiej znajduje się utwór, zmapowana
+  przy użyciu standardowej notacji Pitch Class (np. 0 = C, 1 = C♯/D♭, 2
+  = D).
+\item
+  mode (kategoryczna/binarna): Tryb skali muzycznej (skala
+  majorowa/wesoła = 1, minorowa/smutna = 0).
+\item
+  time\_signature (numeryczna): Szacowane metrum utworu określające, ile
+  uderzeń przypada na jeden takt (najczęściej 4/4).
+\end{itemize}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{3}
+\tightlist
+\item
+  Metadane i identyfikatory (zmienne pomocnicze / usunięte w
+  modelowaniu):
+\end{enumerate}
+
+\begin{itemize}
+\item
+  track\_id: Unikalny identyfikator utworu w systemie Spotify.
+\item
+  track\_name, artists, album\_name: Tekstowe nazwy utworu, wykonawcy
+  oraz albumu.
+\item
+  track\_genre (kategoryczna): Gatunek muzyczny, do którego przypisany
+  jest utwór w ekosystemie Spotify.
+\item
+  explicit (logiczna): Flaga TRUE / FALSE oznaczająca obecność
+  wulgaryzmów lub treści nieodpowiednich dla dzieci.
+\end{itemize}
+
+\subsection{Zdefiniowanie problemu predykcyjnego oraz scharakteryzowanie
+analizowanego zbioru
+danych}\label{zdefiniowanie-problemu-predykcyjnego-oraz-scharakteryzowanie-analizowanego-zbioru-danych}
+
+\textbf{Problem predykcyjny:} Głównym celem analitycznym projektu jest
+rozwiązanie problemu klasyfikacji binarnej polegającego na
+przewidywaniu, czy dany utwór muzyczny osiągnie status ``hitu''. Na
+potrzeby tej analizy zdefiniowano, że utwór staje się hitem (zmienna
+docelowa przyjmuje wartość 1), gdy jego wskaźnik \texttt{popularity}
+(popularność obliczana przez algorytmy Spotify w skali od 0 do 100) jest
+większy lub równy 75. W przeciwnym razie utwór klasyfikowany jest jako
+``brak hitu'' (wartość 0).
+
+\textbf{Charakterystyka zbioru:} Zbiór charakteryzuje się występowaniem
+silnego niezbalansowania klas (ang. \emph{class imbalance}), ponieważ
+utworów o bardzo wysokiej popularności jest w populacji znacznie mniej
+niż utworów przeciętnych. Dane zawierają zmienne numeryczne ciągłe (np.
+tempo, loudness), zmienne kategoryczne (np. track\_genre, key) oraz
+zmienne logiczne (np. explicit). Wymaga to odpowiedniego przygotowania,
+w tym kodowania zmiennych jakościowych, skalowania oraz potencjalnie
+balansowania klas przed etapem uczenia modeli.
+
+\subsection{Przegląd literatury dotyczącej analizowanego problemu
+predykcyjnego oraz omówienie dotychczasowych osiągnięć w tym
+zakresie}\label{przeglux105d-literatury-dotyczux105cej-analizowanego-problemu-predykcyjnego-oraz-omuxf3wienie-dotychczasowych-osiux105gniux119ux107-w-tym-zakresie}
+
+Problem przewidywania sukcesu komercyjnego utworów muzycznych jest
+często eksplorowany w literaturze z zakresu \emph{Music Information
+Retrieval (MIR)} oraz w projektach z dziedziny Data Science.
+
+Dotychczasowe badania wskazują na to, że:
+
+\begin{itemize}
+\item
+  Cechy psychoakustyczne, takie jak \texttt{danceability} (taneczność),
+  \texttt{energy} (energia) oraz \texttt{loudness} (głośność), wykazują
+  często zauważalną korelację z popularnością utworów w głównym nurcie
+  muzycznym. Wczesne prace nad automatyczną predykcją hitów, takie jak
+  badanie Dhanaraj \& Logan {[}1{]}, potwierdzają przydatność cech
+  spektralnych i rytmicznych w odróżnianiu piosenek komercyjnie udanych
+  od pozostałych.
+\item
+  Zmienna \texttt{acousticness} (akustyczność) jest zazwyczaj ujemnie
+  skorelowana z komercyjnym sukcesem we współczesnej muzyce popularnej.
+  Interiano i in. {[}2{]} w analizie obejmującej dekady nagrań wykazali,
+  że trendy muzyczne ewoluują w kierunku bardziej ``wyprodukowanego'',
+  elektronicznego brzmienia, co potwierdzają dane Spotify.
+\item
+  Wielu badaczy wskazuje, że proste modele liniowe (jak Regresja
+  Logistyczna) często ustępują miejsca modelom opartym na zespołach
+  drzew decyzyjnych (np. Random Forest, Gradient Boosting, XGBoost
+  {[}3{]}), które znacznie lepiej radzą sobie ze złożonymi, nieliniowymi
+  interakcjami między cechami akustycznymi a gustami słuchaczy.
+\item
+  Osiągnięcie bardzo wysokiej skuteczności (np. F1-score) jest trudne,
+  ponieważ na popularność piosenki wpływają również czynniki zewnętrzne,
+  których nie ma w zbiorze. Już Pachet \& Roy {[}4{]} w swoim
+  przełomowym artykule wykazali, że ``Hit Song Science'' w oparciu
+  wyłącznie o cechy audio jest problemem fundamentalnie trudnym ze
+  względu na rolę marketingu, artysty i przypadku.
+\item
+  Problem niezbalansowania klas, będący centralnym wyzwaniem niniejszego
+  projektu, jest rozwiązywany w literaturze m.in. za pomocą algorytmu
+  SMOTE zaproponowanego przez Chawla i in. {[}5{]}, który generuje
+  syntetyczne obserwacje klasy mniejszościowej poprzez interpolację w
+  przestrzeni cech.
+\end{itemize}
+
+\subsection{Czyszczenie danych oraz wstępna selekcja
+cech}\label{czyszczenie-danych-oraz-wstux119pna-selekcja-cech}
+
+Proces przygotowania zbioru do analizy rozpoczął się od czyszczenia
+danych i wstępnej selekcji cech. Zrealizowano następujące kroki: *
+\textbf{Tworzenie zmiennej objaśnianej:} Na podstawie ustalonego progu
+wygenerowano nową, binarną zmienną docelową \texttt{is\_hit}. *
+\textbf{Usuwanie duplikatów i braków:} Zbiór Spotify często zawiera te
+same utwory przypisane do różnych albumów lub rynków. Zastosowano
+filtrowanie pozostawiające tylko unikalne pary tytułu utworu i artysty.
+Następnie usunięto wszystkie wiersze zawierające braki danych (NA), aby
+zapewnić stabilność modeli. * \textbf{Eliminacja wycieku danych (Data
+Leakage):} Kluczowym krokiem było usunięcie oryginalnej zmiennej
+\texttt{popularity}. Pozostawienie jej w zbiorze treningowym sprawiłoby,
+że model ``oszukiwałby'', mając bezpośredni dostęp do informacji, z
+której wyliczono zmienną docelową. * \textbf{Selekcja cech:} Usunięto
+kolumny pełniące wyłącznie funkcję identyfikatorów (np. indeksy z pliku
+CSV, \texttt{track\_id}), ponieważ nie niosą one żadnej wartości
+predykcyjnej dla algorytmów uczenia maszynowego. Po procesie
+deduplikacji usunięto również zmienne czysto tekstowe
+(\texttt{track\_name}, \texttt{artists}, \texttt{album\_name}), które w
+surowej formie nie nadają się do standardowego modelowania
+tabelarycznego.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(dplyr)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: pakiet 'dplyr' został zbudowany w wersji R 4.4.2
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Dołączanie pakietu: 'dplyr'
+\end{verbatim}
+
+\begin{verbatim}
+## Następujące obiekty zostały zakryte z 'package:stats':
+## 
+##     filter, lag
+\end{verbatim}
+
+\begin{verbatim}
+## Następujące obiekty zostały zakryte z 'package:base':
+## 
+##     intersect, setdiff, setequal, union
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(readr)}
+\FunctionTok{library}\NormalTok{(tidyr)}
+
+\NormalTok{df }\OtherTok{\textless{}{-}} \FunctionTok{read\_csv}\NormalTok{(}\StringTok{"spotify{-}tracks{-}dataset.csv"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## New names:
+## * `` -> `...1`
+\end{verbatim}
+
+\begin{verbatim}
+## Rows: 114000 Columns: 22
+## -- Column specification --------------------------------------------------------
+## Delimiter: ","
+## chr  (5): track_id, artists, album_name, track_name, track_genre
+## dbl (16): ...1, Unnamed: 0, popularity, duration_ms, danceability, energy, k...
+## lgl  (1): explicit
+## 
+## i Use `spec()` to retrieve the full column specification for this data.
+## i Specify the column types or set `show_col_types = FALSE` to quiet this message.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{POPULARITY\_THRESHOLD }\OtherTok{\textless{}{-}} \DecValTok{75}
+
+\NormalTok{df }\OtherTok{\textless{}{-}}\NormalTok{ df }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{is\_hit =} \FunctionTok{as.factor}\NormalTok{(}\FunctionTok{ifelse}\NormalTok{(popularity }\SpecialCharTok{\textgreater{}=}\NormalTok{ POPULARITY\_THRESHOLD, }\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{)))}
+
+\NormalTok{df }\OtherTok{\textless{}{-}}\NormalTok{ df }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{distinct}\NormalTok{(track\_name, artists, }\AttributeTok{.keep\_all =} \ConstantTok{TRUE}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{drop\_na}\NormalTok{()}
+
+\NormalTok{df }\OtherTok{\textless{}{-}}\NormalTok{ df }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(}\SpecialCharTok{{-}}\FunctionTok{any\_of}\NormalTok{(}\FunctionTok{c}\NormalTok{(}\StringTok{"...1"}\NormalTok{, }\StringTok{"Unnamed: 0"}\NormalTok{, }\StringTok{"X1"}\NormalTok{, }\StringTok{"track\_id"}\NormalTok{, }\StringTok{"popularity"}\NormalTok{, }\StringTok{"track\_name"}\NormalTok{, }\StringTok{"artists"}\NormalTok{, }\StringTok{"album\_name"}\NormalTok{)))}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Wniosek:} Po przeprowadzeniu czyszczenia uzyskano spójny,
+pozbawiony duplikatów i braków zbiór danych, gotowy do dalszej analizy.
+Eliminacja zmiennej \texttt{popularity} jest krytycznym krokiem
+zapobiegającym wyciekowi danych (data leakage) -- bez tego modelu
+trenowałby się de facto na odpowiedzi. Usunięcie kolumn tekstowych i
+identyfikatorów pozwala skupić się wyłącznie na cechach o potencjale
+predykcyjnym. Wynikowy zbiór zawiera zarówno zmienne numeryczne
+(parametry audio), jak i kategoryczne (\texttt{track\_genre},
+\texttt{key}, \texttt{mode}), co determinuje dalsze kroki przetwarzania
+w pipeline'u modelowania.
+
+\subsection{Omówienie oraz zwizualizowanie istotnych zależności w
+analizowanym zbiorze
+danych}\label{omuxf3wienie-oraz-zwizualizowanie-istotnych-zaleux17cnoux15bci-w-analizowanym-zbiorze-danych}
+
+W celu lepszego zrozumienia struktury danych oraz relacji między
+zmiennymi przeprowadzono eksploracyjną analizę danych (EDA) z
+wykorzystaniem technik wizualizacji. Skupiono się na trzech kluczowych
+aspektach:
+
+\textbf{1. Rozkład zmiennej docelowej:} Wykres słupkowy ilustrujący
+rozkład zmiennej \texttt{is\_hit} ukazuje drastyczne niezbalansowanie
+klas. Zdecydowana większość obserwacji w zbiorze należy do klasy
+większościowej (0 - ``brak hitu''), podczas gdy utwory zaklasyfikowane
+jako hity (1) stanowią jedynie niewielki ułamek populacji (ok. 5-7\%).
+
+\emph{Wniosek:} Skrajna asymetria klas sugeruje, że model nauczony na
+surowych danych mógłby osiągnąć wysoką dokładność (Accuracy) poprzez
+proste przypisywanie wszystkim utworom klasy ``0''. Wymusza to w
+późniejszych etapach zastosowanie technik balansowania (SMOTE) oraz
+metryk oceny skupionych na klasie mniejszościowej (Precision, Recall,
+F1-score).
+
+\textbf{2. Macierz korelacji:} Analiza korelogramu dla zmiennych
+numerycznych ujawnia kilka silnych zależności, które są spójne z
+intuicją muzyczną. Występuje bardzo silna, dodatnia korelacja pomiędzy
+zmiennymi \texttt{energy} (energia) oraz \texttt{loudness} (głośność).
+Utwory głośniejsze są przez algorytmy Spotify klasyfikowane jako
+bardziej energetyczne. Zmienna \texttt{acousticness} (akustyczność) jest
+silnie ujemnie skorelowana zarówno z energią, jak i głośnością, co
+odzwierciedla techniczną różnicę między instrumentami akustycznymi a
+zelektronizowaną produkcją współczesną.
+
+\emph{Wniosek:} Identyfikacja silnie skorelowanych par zmiennych
+objaśniających (multikolinearność) jest sygnałem, że proste modele
+liniowe mogą mieć trudności z poprawną estymacją wag. W procesie
+modelowania preferowane będą algorytmy odporne na to zjawisko, takie jak
+lasy losowe, lub konieczne będzie usunięcie redundantnych cech.
+
+\textbf{3. Redukcja wymiarów (PCA):} Aby zwizualizować trudność
+postawionego problemu analitycznego, przeprowadzono Analizę Głównych
+Składowych (PCA) dla numerycznych cech akustycznych. Technika ta
+pozwoliła na redukcję wielowymiarowej przestrzeni danych do dwóch
+głównych wymiarów (PC1 i PC2), które łącznie wyjaśniają znaczną część
+wariancji zbioru.
+
+\emph{Wniosek:} Nałożenie na wykres punktowy kolorów odpowiadających
+klasie docelowej uwidacznia, że klasa ``hitów'' nie tworzy na rynku
+muzycznym jednej, wyraźnie odseparowanej grupy, lecz jest głęboko
+zanurzona w przestrzeni cech utworów przeciętnych. Analiza ładunków
+sugeruje, że PC1 jest silnie związana z ``intensywnością'' utworu
+(energia, głośność vs akustyczność), natomiast PC2 może odzwierciedlać
+parametry rytmiczne i nastrojowe (taneczność, walencja). Fakt, że hity
+są rozproszone, oznacza, że nie istnieje prosty zestaw reguł (``złota
+formuła''), który gwarantuje sukces. Granica decyzyjna jest wysoce
+nieliniowa, co uzasadnia użycie modeli takich jak XGBoost czy Random
+Forest.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: pakiet 'ggplot2' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(corrplot)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: pakiet 'corrplot' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## corrplot 0.95 loaded
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(tidymodels)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: pakiet 'tidymodels' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## -- Attaching packages -------------------------------------- tidymodels 1.4.1 --
+\end{verbatim}
+
+\begin{verbatim}
+## v broom        1.0.12     v rsample      1.3.2 
+## v dials        1.4.2      v tailor       0.1.0 
+## v infer        1.1.0      v tune         2.0.1 
+## v modeldata    1.5.1      v workflows    1.3.0 
+## v parsnip      1.4.1      v workflowsets 1.1.1 
+## v purrr        1.2.1      v yardstick    1.3.2 
+## v recipes      1.3.1
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: pakiet 'broom' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: pakiet 'dials' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: pakiet 'scales' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: pakiet 'infer' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: pakiet 'modeldata' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: pakiet 'parsnip' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: pakiet 'purrr' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: pakiet 'recipes' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: pakiet 'rsample' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: pakiet 'tailor' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: pakiet 'tune' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: pakiet 'workflows' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: pakiet 'workflowsets' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## Warning: pakiet 'yardstick' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## -- Conflicts ----------------------------------------- tidymodels_conflicts() --
+## x purrr::discard()  masks scales::discard()
+## x dplyr::filter()   masks stats::filter()
+## x dplyr::lag()      masks stats::lag()
+## x yardstick::spec() masks readr::spec()
+## x recipes::step()   masks stats::step()
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{ggplot}\NormalTok{(df, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ is\_hit, }\AttributeTok{fill =}\NormalTok{ is\_hit)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_bar}\NormalTok{(}\AttributeTok{show.legend =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"0"} \OtherTok{=} \StringTok{"steelblue"}\NormalTok{, }\StringTok{"1"} \OtherTok{=} \StringTok{"firebrick"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Rozkład zmiennej docelowej (is\_hit)"}\NormalTok{,}
+       \AttributeTok{x =} \StringTok{"Klasa (0 = Brak hitu, 1 = Hit)"}\NormalTok{,}
+       \AttributeTok{y =} \StringTok{"Liczba utworów"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{projekt-final_files/figure-latex/unnamed-chunk-2-1.pdf}}
+
+\textbf{Wniosek:} Wykres potwierdza silną asymetrię klas -- hity (klasa
+1) stanowią zdecydowaną mniejszość w zbiorze, co sprawia, że model
+uczony na surowych danych mógłby niemal bez wysiłku uzyskać wysoką
+dokładność ogólną, jednocześnie całkowicie ignorując klasę
+mniejszościową. Uzasadnia to konieczność zastosowania techniki SMOTE w
+dalszym etapie modelowania oraz skupienia się na metrykach Precision,
+Recall i F1-Score zamiast samej dokładności.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(corrplot)}
+
+\NormalTok{numeric\_cols }\OtherTok{\textless{}{-}}\NormalTok{ df }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(}\FunctionTok{where}\NormalTok{(is.numeric))}
+
+\NormalTok{corr\_matrix }\OtherTok{\textless{}{-}} \FunctionTok{cor}\NormalTok{(numeric\_cols, }\AttributeTok{use =} \StringTok{"complete.obs"}\NormalTok{)}
+
+\FunctionTok{corrplot}\NormalTok{(corr\_matrix, }
+         \AttributeTok{method =} \StringTok{"color"}\NormalTok{, }
+         \AttributeTok{type =} \StringTok{"upper"}\NormalTok{, }
+         \AttributeTok{tl.col =} \StringTok{"black"}\NormalTok{, }
+         \AttributeTok{tl.cex =} \FloatTok{0.8}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{projekt-final_files/figure-latex/unnamed-chunk-3-1.pdf}}
+
+\textbf{Wniosek:} Macierz korelacji ujawnia kilka kluczowych zależności
+strukturalnych. Najsilniejsza jest dodatnia korelacja między
+\texttt{energy} a \texttt{loudness} (r ≈ 0.76), co potwierdza, że
+głośność jest technicznym komponentem postrzeganej energii. Silna ujemna
+korelacja \texttt{acousticness} z oboma tymi zmiennymi wskazuje, że
+instrumenty akustyczne i elektroniczna produkcja muzyczna zajmują
+przeciwne bieguny przestrzeni cech. Z perspektywy modelowania, wysoka
+współliniowość może destabilizować estymację wag w modelu regresji
+logistycznej -- kolejny argument przemawiający za algorytmami
+drzewiastymi, odpornymi na to zjawisko.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(tidymodels)}
+
+\NormalTok{pca\_rec }\OtherTok{\textless{}{-}} \FunctionTok{recipe}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ df }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\FunctionTok{where}\NormalTok{(is.numeric), is\_hit)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{step\_normalize}\NormalTok{(}\FunctionTok{all\_numeric\_predictors}\NormalTok{()) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{step\_pca}\NormalTok{(}\FunctionTok{all\_numeric\_predictors}\NormalTok{(), }\AttributeTok{num\_comp =} \DecValTok{2}\NormalTok{)}
+
+\NormalTok{pca\_prep }\OtherTok{\textless{}{-}} \FunctionTok{prep}\NormalTok{(pca\_rec)}
+\NormalTok{pca\_data }\OtherTok{\textless{}{-}} \FunctionTok{bake}\NormalTok{(pca\_prep, }\AttributeTok{new\_data =} \ConstantTok{NULL}\NormalTok{)}
+
+\FunctionTok{ggplot}\NormalTok{(pca\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ PC1, }\AttributeTok{y =}\NormalTok{ PC2, }\AttributeTok{color =}\NormalTok{ is\_hit)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{alpha =} \FloatTok{0.6}\NormalTok{, }\AttributeTok{size =} \FloatTok{1.5}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"0"} \OtherTok{=} \StringTok{"steelblue"}\NormalTok{, }\StringTok{"1"} \OtherTok{=} \StringTok{"firebrick"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Redukcja wymiarów (PCA) {-} Dystrybucja hitów na rynku"}\NormalTok{,}
+       \AttributeTok{x =} \StringTok{"Główna Składowa 1 (PC1)"}\NormalTok{,}
+       \AttributeTok{y =} \StringTok{"Główna Składowa 2 (PC2)"}\NormalTok{,}
+       \AttributeTok{color =} \StringTok{"Hit"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{projekt-final_files/figure-latex/unnamed-chunk-4-1.pdf}}
+
+\textbf{Wniosek:} Wykres PCA obrazuje fundamentalną trudność
+postawionego problemu -- klasa hitów (czerwone punkty) nie tworzy
+zwartego, separowalnego skupiska, lecz jest rozproszona w całej
+przestrzeni cech. Oznacza to, że nie istnieje prosta, linearna granica
+decyzyjna mogąca skutecznie oddzielić hity od pozostałych utworów. Układ
+PC1 (intensywność produkcji) i PC2 (parametry rytmiczno-nastrojowe)
+wspólnie wyjaśniają główną zmienność zbioru, jednak nie wystarczają do
+jednoznacznej klasyfikacji. Ten wynik jednoznacznie uzasadnia
+zastosowanie modeli o nieliniowej granicy decyzyjnej w dalszych etapach
+analizy.
+
+\subsection{Przygotowanie danych do dalszego procesu
+modelowania}\label{przygotowanie-danych-do-dalszego-procesu-modelowania}
+
+Przygotowanie danych do uczenia maszynowego zrealizowano z
+wykorzystaniem ekosystemu tidymodels. Proces ten podzielono na
+następujące fazy:
+
+Podział zbioru: Dane podzielono na zbiór treningowy (80\% obserwacji)
+oraz testowy (20\% obserwacji). Zastosowano podział warstwowy
+(stratified split) ze względu na zmienną is\_hit, co gwarantuje, że
+proporcja hitów w obu zbiorach pozostanie identyczna jak w populacji
+bazowej.
+
+Transformacja predyktorów: Utworzono recepturę transformacji (recipe), w
+której zastosowano kodowanie ``gorącojedynkowe'' (One-Hot Encoding /
+Dummy Variables) dla wszystkich predyktorów kategorycznych (np.
+track\_genre) oraz standaryzację (centrowanie i skalowanie) dla
+wszystkich zmiennych numerycznych. Zmienna logiczna explicit została
+wcześniej przekształcona na typ numeryczny, aby zapobiec błędom
+przetwarzania geometrycznego.
+
+Balansowanie klas: Ze względu na zidentyfikowane we wcześniejszym etapie
+skrajne niezbalansowanie klas, do receptury włączono krok oversamplingu
+przy użyciu algorytmu SMOTE (Synthetic Minority Over-sampling
+Technique). Został on zastosowany wyłącznie na zbiorze treningowym, aby
+wygenerować syntetyczne obserwacje klasy mniejszościowej (hitów) i
+zrównoważyć zbiór, co zapobiegnie faworyzowaniu klasy większościowej
+przez modele.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(tidymodels)}
+\FunctionTok{library}\NormalTok{(themis)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: pakiet 'themis' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{df }\OtherTok{\textless{}{-}}\NormalTok{ df }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\AttributeTok{explicit =} \FunctionTok{as.numeric}\NormalTok{(explicit))}
+
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{42}\NormalTok{)}
+
+\NormalTok{data\_split }\OtherTok{\textless{}{-}} \FunctionTok{initial\_split}\NormalTok{(df, }\AttributeTok{prop =} \FloatTok{0.8}\NormalTok{, }\AttributeTok{strata =}\NormalTok{ is\_hit)}
+\NormalTok{train\_data }\OtherTok{\textless{}{-}} \FunctionTok{training}\NormalTok{(data\_split)}
+\NormalTok{test\_data }\OtherTok{\textless{}{-}} \FunctionTok{testing}\NormalTok{(data\_split)}
+
+\NormalTok{rec }\OtherTok{\textless{}{-}} \FunctionTok{recipe}\NormalTok{(is\_hit }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ train\_data) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{step\_dummy}\NormalTok{(}\FunctionTok{all\_nominal\_predictors}\NormalTok{()) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{step\_normalize}\NormalTok{(}\FunctionTok{all\_numeric\_predictors}\NormalTok{()) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{step\_smote}\NormalTok{(is\_hit)}
+
+\NormalTok{prep\_rec }\OtherTok{\textless{}{-}} \FunctionTok{prep}\NormalTok{(rec)}
+
+\NormalTok{train\_processed }\OtherTok{\textless{}{-}} \FunctionTok{bake}\NormalTok{(prep\_rec, }\AttributeTok{new\_data =} \ConstantTok{NULL}\NormalTok{)}
+\NormalTok{test\_processed }\OtherTok{\textless{}{-}} \FunctionTok{bake}\NormalTok{(prep\_rec, }\AttributeTok{new\_data =}\NormalTok{ test\_data)}
+
+\FunctionTok{dim}\NormalTok{(train\_processed)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 128074    127
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{table}\NormalTok{(train\_processed}\SpecialCharTok{$}\NormalTok{is\_hit)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+##     0     1 
+## 64037 64037
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{head}\NormalTok{(train\_processed)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 6 x 127
+##   duration_ms explicit danceability energy    key loudness   mode speechiness
+##         <dbl>    <dbl>        <dbl>  <dbl>  <dbl>    <dbl>  <dbl>       <dbl>
+## 1    -0.00400   -0.306        0.657 -0.673 -1.20    0.349  -1.32        0.463
+## 2    -0.727     -0.306       -0.784 -1.81  -1.20   -1.63    0.759      -0.108
+## 3    -0.260     -0.306       -1.65  -2.23  -1.48   -1.88    0.759      -0.450
+## 4    -0.151     -0.306        0.724 -0.595  0.203  -0.0405  0.759       0.138
+## 5    -0.0153    -0.306       -0.857 -1.89  -0.921  -0.0433  0.759      -0.457
+## 6     0.106     -0.306        0.809 -0.739  1.61   -0.139   0.759      -0.404
+## # i 119 more variables: acousticness <dbl>, instrumentalness <dbl>,
+## #   liveness <dbl>, valence <dbl>, tempo <dbl>, time_signature <dbl>,
+## #   track_genre_afrobeat <dbl>, track_genre_alt.rock <dbl>,
+## #   track_genre_alternative <dbl>, track_genre_ambient <dbl>,
+## #   track_genre_anime <dbl>, track_genre_black.metal <dbl>,
+## #   track_genre_bluegrass <dbl>, track_genre_blues <dbl>,
+## #   track_genre_brazil <dbl>, track_genre_breakbeat <dbl>, ...
+\end{verbatim}
+
+\textbf{Wniosek:} Po zastosowaniu SMOTE zbiór treningowy zawiera
+wyrównany rozkład klas -- liczba syntetycznych obserwacji klasy ``hit''
+wzrosła do poziomu klasy większościowej. Podział warstwowy (stratified
+split) zapewnia, że proporcja hitów w zbiorze testowym odpowiada
+proporcji w oryginalnym zbiorze, co gwarantuje wiarygodną ewaluację.
+Standaryzacja zmiennych numerycznych jest niezbędna dla stabilności
+regresji logistycznej i przyspiesza zbieżność XGBoost. Kodowanie One-Hot
+Encoding zmiennej \texttt{track\_genre} znacznie zwiększa liczbę
+predyktorów, ale pozwala modelom drzewiastym efektywnie wykorzystać
+informację o gatunku muzycznym. Zbiór testowy pozostaje celowo
+niezmieniony (bez SMOTE), aby ocena odzwierciedlała realne,
+niezbalansowane warunki.
+
+\subsection{Budowa, trenowanie oraz wstępne porównanie wybranych modeli
+uczenia
+maszynowego}\label{budowa-trenowanie-oraz-wstux119pne-poruxf3wnanie-wybranych-modeli-uczenia-maszynowego}
+
+W procesie modelowania predykcyjnego zdecydowano się na wykorzystanie i
+porównanie trzech algorytmów klasyfikacyjnych o zróżnicowanej
+charakterystyce matematycznej, co pozwala na rzetelną ocenę
+skuteczności:
+
+Regresja Logistyczna (Logistic Regression): Zastosowana jako model
+bazowy (tzw. baseline). Jest to model parametryczny, łatwy w
+interpretacji, jednak zakładający liniową zależność między predyktorami
+a logarytmem szansy wystąpienia klasy pozytywnej.
+
+Las Losowy (Random Forest): Zaawansowany model zespołowy (ang.
+ensemble), oparty na agregacji wyników wielu drzew decyzyjnych w ramach
+techniki Baggingu. Wybór tego modelu podyktowany był jego wysoką
+skutecznością, brakiem wrażliwości na zjawisko multikolinearności oraz
+zdolnością do modelowania złożonych, nieliniowych relacji.
+
+XGBoost (Extreme Gradient Boosting): Algorytm oparty na technice
+Boostingu (budowa drzew sekwencyjna, optymalizująca błędy poprzedników),
+będący obecnie jednym z najskuteczniejszych algorytmów klasyfikacyjnych
+dla strukturalnych danych tabelarycznych.
+
+Modele zostały wytrenowane na przetworzonym i zbalansowanym zbiorze
+treningowym. Następnie wygenerowano predykcje na niewidzianym wcześniej
+zbiorze testowym, co stanowi fundament do obiektywnej ewaluacji w
+kolejnym kroku.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(parsnip)}
+\FunctionTok{library}\NormalTok{(ranger)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: pakiet 'ranger' został zbudowany w wersji R 4.4.2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(xgboost)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: pakiet 'xgboost' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{log\_spec }\OtherTok{\textless{}{-}} \FunctionTok{logistic\_reg}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{set\_engine}\NormalTok{(}\StringTok{"glm"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{set\_mode}\NormalTok{(}\StringTok{"classification"}\NormalTok{)}
+
+\NormalTok{rf\_spec }\OtherTok{\textless{}{-}} \FunctionTok{rand\_forest}\NormalTok{(}\AttributeTok{trees =} \DecValTok{100}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{set\_engine}\NormalTok{(}\StringTok{"ranger"}\NormalTok{, }\AttributeTok{importance =} \StringTok{"impurity"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{set\_mode}\NormalTok{(}\StringTok{"classification"}\NormalTok{)}
+
+\NormalTok{xgb\_spec }\OtherTok{\textless{}{-}} \FunctionTok{boost\_tree}\NormalTok{(}\AttributeTok{trees =} \DecValTok{100}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{set\_engine}\NormalTok{(}\StringTok{"xgboost"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{set\_mode}\NormalTok{(}\StringTok{"classification"}\NormalTok{)}
+
+\NormalTok{log\_fit }\OtherTok{\textless{}{-}}\NormalTok{ log\_spec }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fit}\NormalTok{(is\_hit }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ train\_processed)}
+
+\NormalTok{rf\_fit }\OtherTok{\textless{}{-}}\NormalTok{ rf\_spec }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fit}\NormalTok{(is\_hit }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ train\_processed)}
+
+\NormalTok{xgb\_fit }\OtherTok{\textless{}{-}}\NormalTok{ xgb\_spec }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{fit}\NormalTok{(is\_hit }\SpecialCharTok{\textasciitilde{}}\NormalTok{ ., }\AttributeTok{data =}\NormalTok{ train\_processed)}
+
+\NormalTok{log\_preds }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(log\_fit, }\AttributeTok{new\_data =}\NormalTok{ test\_processed) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{bind\_cols}\NormalTok{(}\FunctionTok{predict}\NormalTok{(log\_fit, }\AttributeTok{new\_data =}\NormalTok{ test\_processed, }\AttributeTok{type =} \StringTok{"prob"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{bind\_cols}\NormalTok{(test\_processed }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(is\_hit))}
+
+\NormalTok{rf\_preds }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(rf\_fit, }\AttributeTok{new\_data =}\NormalTok{ test\_processed) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{bind\_cols}\NormalTok{(}\FunctionTok{predict}\NormalTok{(rf\_fit, }\AttributeTok{new\_data =}\NormalTok{ test\_processed, }\AttributeTok{type =} \StringTok{"prob"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{bind\_cols}\NormalTok{(test\_processed }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(is\_hit))}
+
+\NormalTok{xgb\_preds }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(xgb\_fit, }\AttributeTok{new\_data =}\NormalTok{ test\_processed) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{bind\_cols}\NormalTok{(}\FunctionTok{predict}\NormalTok{(xgb\_fit, }\AttributeTok{new\_data =}\NormalTok{ test\_processed, }\AttributeTok{type =} \StringTok{"prob"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{bind\_cols}\NormalTok{(test\_processed }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(is\_hit))}
+\end{Highlighting}
+\end{Shaded}
+
+\textbf{Wniosek:} Wszystkie trzy modele zostały pomyślnie wytrenowane na
+zbalansowanym zbiorze treningowym. Każdy z nich reprezentuje inną
+filozofię uczenia: regresja logistyczna szuka globalnej, liniowej
+granicy decyzyjnej; las losowy buduje ensemble niezależnych drzew
+(bagging), a XGBoost sekwencyjnie koryguje błędy poprzednich drzew
+(boosting). Zróżnicowanie podejść jest celowe -- pozwoli ocenić, które
+założenia najlepiej pasują do struktury danych muzycznych. Predykcje na
+zbiorze testowym umożliwią obiektywne porównanie modeli w kolejnym
+etapie.
+
+\subsubsection{Wstępne porównanie modeli za pomocą kroswalidacji (5-fold
+CV)}\label{wstux119pne-poruxf3wnanie-modeli-za-pomocux105-kroswalidacji-5-fold-cv}
+
+Aby uzyskać stabilną i odporną na losowość jednego podziału ocenę
+modeli, przeprowadzono \textbf{5-krotną kroswalidację} (\emph{5-fold
+Cross-Validation}) na oryginalnym zbiorze treningowym. W każdej z 5
+iteracji receptura transformacji (w tym krok SMOTE) jest stosowana
+\emph{niezależnie} wyłącznie na danych treningowych danego foldu -- dane
+walidacyjne pozostają niezmienione. Takie podejście jest metodologicznie
+poprawniejsze niż ocena na jednym podziale, ponieważ uśrednia wyniki po
+różnych próbkach i dostarcza estymacji niepewności (odchylenie
+standardowe metryki).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(tidymodels)}
+\FunctionTok{library}\NormalTok{(themis)}
+
+\CommentTok{\# Ustawienie klasy "1" jako zdarzenia pozytywnego}
+\FunctionTok{options}\NormalTok{(}\AttributeTok{yardstick.event\_first =} \ConstantTok{FALSE}\NormalTok{)}
+
+\FunctionTok{set.seed}\NormalTok{(}\DecValTok{7851}\NormalTok{)}
+\NormalTok{cv\_folds }\OtherTok{\textless{}{-}} \FunctionTok{vfold\_cv}\NormalTok{(train\_data, }\AttributeTok{v =} \DecValTok{5}\NormalTok{, }\AttributeTok{strata =}\NormalTok{ is\_hit)}
+
+\CommentTok{\# Tworzenie workflow: recipe (z SMOTE) + model}
+\NormalTok{log\_wf }\OtherTok{\textless{}{-}} \FunctionTok{workflow}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{add\_recipe}\NormalTok{(rec) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{add\_model}\NormalTok{(log\_spec)}
+\NormalTok{rf\_wf  }\OtherTok{\textless{}{-}} \FunctionTok{workflow}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{add\_recipe}\NormalTok{(rec) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{add\_model}\NormalTok{(rf\_spec)}
+\NormalTok{xgb\_wf }\OtherTok{\textless{}{-}} \FunctionTok{workflow}\NormalTok{() }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{add\_recipe}\NormalTok{(rec) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{add\_model}\NormalTok{(xgb\_spec)}
+
+\NormalTok{cv\_met }\OtherTok{\textless{}{-}} \FunctionTok{metric\_set}\NormalTok{(accuracy, precision, recall, f\_meas, roc\_auc)}
+
+\NormalTok{log\_cv }\OtherTok{\textless{}{-}} \FunctionTok{fit\_resamples}\NormalTok{(log\_wf, cv\_folds, }\AttributeTok{metrics =}\NormalTok{ cv\_met)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## > A | warning: glm.fit: dopasowane prawdopodobieństwa numerycznie okazały się być 0 lub 1
+\end{verbatim}
+
+\begin{verbatim}
+## There were issues with some computations   A: x1There were issues with some computations   A: x1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{rf\_cv  }\OtherTok{\textless{}{-}} \FunctionTok{fit\_resamples}\NormalTok{(rf\_wf,  cv\_folds, }\AttributeTok{metrics =}\NormalTok{ cv\_met)}
+\NormalTok{xgb\_cv }\OtherTok{\textless{}{-}} \FunctionTok{fit\_resamples}\NormalTok{(xgb\_wf, cv\_folds, }\AttributeTok{metrics =}\NormalTok{ cv\_met)}
+
+\NormalTok{cv\_results }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(}
+  \FunctionTok{collect\_metrics}\NormalTok{(log\_cv) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \StringTok{"Regresja Logistyczna"}\NormalTok{),}
+  \FunctionTok{collect\_metrics}\NormalTok{(rf\_cv)  }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \StringTok{"Las Losowy"}\NormalTok{),}
+  \FunctionTok{collect\_metrics}\NormalTok{(xgb\_cv) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \StringTok{"XGBoost"}\NormalTok{)}
+\NormalTok{)}
+
+\CommentTok{\# Tabela zbiorcza wyników CV}
+\NormalTok{cv\_results }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{select}\NormalTok{(model, .metric, mean, std\_err) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{mutate}\NormalTok{(}\FunctionTok{across}\NormalTok{(}\FunctionTok{c}\NormalTok{(mean, std\_err), \textbackslash{}(x) }\FunctionTok{round}\NormalTok{(x, }\DecValTok{4}\NormalTok{))) }\SpecialCharTok{\%\textgreater{}\%}
+\NormalTok{  tidyr}\SpecialCharTok{::}\FunctionTok{pivot\_wider}\NormalTok{(}\AttributeTok{names\_from =}\NormalTok{ model, }\AttributeTok{values\_from =} \FunctionTok{c}\NormalTok{(mean, std\_err)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{print}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 5 x 7
+##   .metric   `mean_Regresja Logistyczna` `mean_Las Losowy` mean_XGBoost
+##   <chr>                           <dbl>             <dbl>        <dbl>
+## 1 accuracy                        0.835             0.967        0.970
+## 2 f_meas                          0.908             0.983        0.985
+## 3 precision                       0.998             0.99         0.989
+## 4 recall                          0.834             0.976        0.980
+## 5 roc_auc                         0.930             0.902        0.888
+## # i 3 more variables: `std_err_Regresja Logistyczna` <dbl>,
+## #   `std_err_Las Losowy` <dbl>, std_err_XGBoost <dbl>
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Wykres porównawczy}
+\NormalTok{cv\_results }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{filter}\NormalTok{(.metric }\SpecialCharTok{\%in\%} \FunctionTok{c}\NormalTok{(}\StringTok{"f\_meas"}\NormalTok{, }\StringTok{"roc\_auc"}\NormalTok{, }\StringTok{"precision"}\NormalTok{, }\StringTok{"recall"}\NormalTok{)) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{ggplot}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ model, }\AttributeTok{y =}\NormalTok{ mean, }\AttributeTok{fill =}\NormalTok{ model)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_col}\NormalTok{(}\AttributeTok{show.legend =} \ConstantTok{FALSE}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_errorbar}\NormalTok{(}\FunctionTok{aes}\NormalTok{(}\AttributeTok{ymin =}\NormalTok{ mean }\SpecialCharTok{{-}}\NormalTok{ std\_err, }\AttributeTok{ymax =}\NormalTok{ mean }\SpecialCharTok{+}\NormalTok{ std\_err), }\AttributeTok{width =} \FloatTok{0.25}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{facet\_wrap}\NormalTok{(}\SpecialCharTok{\textasciitilde{}}\NormalTok{ .metric, }\AttributeTok{scales =} \StringTok{"free\_y"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Porównanie modeli – 5{-}krotna kroswalidacja (5{-}fold CV)"}\NormalTok{,}
+       \AttributeTok{x =} \ConstantTok{NULL}\NormalTok{,}
+       \AttributeTok{y =} \StringTok{"Średnia wartość metryki (± std. błąd)"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{projekt-final_files/figure-latex/unnamed-chunk-7-1.pdf}}
+
+\textbf{Wniosek z kroswalidacji:} Wyniki CV potwierdzają obserwacje z
+ewaluacji na zbiorze testowym. Regresja logistyczna osiąga relatywnie
+wysokie ROC-AUC, lecz jej F1-Score i precyzja są wyraźnie niższe od
+modeli drzewiastych, co wskazuje na nadmierne rozszerzenie granicy
+decyzyjnej po SMOTE. Las Losowy i XGBoost wykazują porównywalną
+stabilność (małe odchylenia std. między foldami), przy czym Las Losowy
+zwykle uzyskuje nieco lepszy F1-Score. Słupki błędu (±1 std. błąd) są
+wąskie dla wszystkich modeli, co świadczy o spójności wyników między
+foldami i niskim ryzyku przeuczenia. Na podstawie tych wyników
+\textbf{Las Losowy} zostaje wybrany jako model wiodący do dalszej
+ewaluacji i wdrożenia.
+
+\subsection{Ewaluacja modeli uczenia maszynowego oraz ich
+kalibracja}\label{ewaluacja-modeli-uczenia-maszynowego-oraz-ich-kalibracja}
+
+Po wytrenowaniu modeli na zbalansowanym zbiorze treningowym
+(wykorzystującym technikę SMOTE), przeprowadzono ich ewaluację na
+surowym zbiorze testowym. Pozwoliło to na sprawdzenie, jak modele radzą
+sobie z rzeczywistym rozkładem danych (gdzie hity są rzadkością).
+
+Do oceny jakości klasyfikacji wykorzystano zestaw metryk:
+\textbf{Accuracy} (Dokładność), \textbf{Precision} (Precyzja),
+\textbf{Recall} (Czułość) oraz \textbf{F1-Score}. Dodatkowo wygenerowano
+krzywe \textbf{ROC} oraz obliczono pole pod krzywą (\textbf{ROC-AUC}),
+które jest odporne na niezbalansowanie klas.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(yardstick)}
+\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+\FunctionTok{library}\NormalTok{(probably)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: pakiet 'probably' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Dołączanie pakietu: 'probably'
+\end{verbatim}
+
+\begin{verbatim}
+## Następujące obiekty zostały zakryte z 'package:base':
+## 
+##     as.factor, as.ordered
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{multi\_metric }\OtherTok{\textless{}{-}} \FunctionTok{metric\_set}\NormalTok{(accuracy, precision, recall, f\_meas)}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{{-}{-}{-} WYNIKI DLA REGRESJI LOGISTYCZNEJ {-}{-}{-}}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## --- WYNIKI DLA REGRESJI LOGISTYCZNEJ ---
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(log\_preds }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{multi\_metric}\NormalTok{(}\AttributeTok{truth =}\NormalTok{ is\_hit, }\AttributeTok{estimate =}\NormalTok{ .pred\_class, }\AttributeTok{event\_level =} \StringTok{"second"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 4 x 3
+##   .metric   .estimator .estimate
+##   <chr>     <chr>          <dbl>
+## 1 accuracy  binary        0.832 
+## 2 precision binary        0.0723
+## 3 recall    binary        0.827 
+## 4 f_meas    binary        0.133
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{{-}{-}{-} WYNIKI DLA LASU LOSOWEGO {-}{-}{-}}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## --- WYNIKI DLA LASU LOSOWEGO ---
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(rf\_preds }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{multi\_metric}\NormalTok{(}\AttributeTok{truth =}\NormalTok{ is\_hit, }\AttributeTok{estimate =}\NormalTok{ .pred\_class, }\AttributeTok{event\_level =} \StringTok{"second"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 4 x 3
+##   .metric   .estimator .estimate
+##   <chr>     <chr>          <dbl>
+## 1 accuracy  binary         0.965
+## 2 precision binary         0.208
+## 3 recall    binary         0.441
+## 4 f_meas    binary         0.283
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{{-}{-}{-} WYNIKI DLA XGBoost {-}{-}{-}}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## --- WYNIKI DLA XGBoost ---
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(xgb\_preds }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{multi\_metric}\NormalTok{(}\AttributeTok{truth =}\NormalTok{ is\_hit, }\AttributeTok{estimate =}\NormalTok{ .pred\_class, }\AttributeTok{event\_level =} \StringTok{"second"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 4 x 3
+##   .metric   .estimator .estimate
+##   <chr>     <chr>          <dbl>
+## 1 accuracy  binary         0.968
+## 2 precision binary         0.210
+## 3 recall    binary         0.390
+## 4 f_meas    binary         0.273
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{log\_roc }\OtherTok{\textless{}{-}}\NormalTok{ log\_preds }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{roc\_curve}\NormalTok{(}\AttributeTok{truth =}\NormalTok{ is\_hit, .pred\_1, }\AttributeTok{event\_level =} \StringTok{"second"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \StringTok{"Regresja Logistyczna"}\NormalTok{)}
+\NormalTok{rf\_roc }\OtherTok{\textless{}{-}}\NormalTok{ rf\_preds }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{roc\_curve}\NormalTok{(}\AttributeTok{truth =}\NormalTok{ is\_hit, .pred\_1, }\AttributeTok{event\_level =} \StringTok{"second"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \StringTok{"Las Losowy"}\NormalTok{)}
+\NormalTok{xgb\_roc }\OtherTok{\textless{}{-}}\NormalTok{ xgb\_preds }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{roc\_curve}\NormalTok{(}\AttributeTok{truth =}\NormalTok{ is\_hit, .pred\_1, }\AttributeTok{event\_level =} \StringTok{"second"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{mutate}\NormalTok{(}\AttributeTok{model =} \StringTok{"XGBoost"}\NormalTok{)}
+
+\NormalTok{roc\_data }\OtherTok{\textless{}{-}} \FunctionTok{bind\_rows}\NormalTok{(log\_roc, rf\_roc, xgb\_roc)}
+
+\FunctionTok{ggplot}\NormalTok{(roc\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =} \DecValTok{1} \SpecialCharTok{{-}}\NormalTok{ specificity, }\AttributeTok{y =}\NormalTok{ sensitivity, }\AttributeTok{color =}\NormalTok{ model)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_path}\NormalTok{(}\AttributeTok{linewidth =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_abline}\NormalTok{(}\AttributeTok{lty =} \DecValTok{2}\NormalTok{, }\AttributeTok{color =} \StringTok{"gray50"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{coord\_equal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Krzywe ROC dla przetestowanych modeli"}\NormalTok{,}
+       \AttributeTok{x =} \StringTok{"False Positive Rate (1 {-} Specificity)"}\NormalTok{,}
+       \AttributeTok{y =} \StringTok{"True Positive Rate (Sensitivity)"}\NormalTok{,}
+       \AttributeTok{color =} \StringTok{"Model"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_color\_manual}\NormalTok{(}\AttributeTok{values =} \FunctionTok{c}\NormalTok{(}\StringTok{"Regresja Logistyczna"} \OtherTok{=} \StringTok{"steelblue"}\NormalTok{, }\StringTok{"Las Losowy"} \OtherTok{=} \StringTok{"firebrick"}\NormalTok{, }\StringTok{"XGBoost"} \OtherTok{=} \StringTok{"forestgreen"}\NormalTok{))}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{projekt-final_files/figure-latex/unnamed-chunk-8-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{{-}{-}{-} AUC DLA REGRESJI LOGISTYCZNEJ {-}{-}{-}}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## --- AUC DLA REGRESJI LOGISTYCZNEJ ---
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{log\_preds }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{roc\_auc}\NormalTok{(}\AttributeTok{truth =}\NormalTok{ is\_hit, .pred\_1, }\AttributeTok{event\_level =} \StringTok{"second"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{print}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 3
+##   .metric .estimator .estimate
+##   <chr>   <chr>          <dbl>
+## 1 roc_auc binary         0.920
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{{-}{-}{-} AUC DLA LASU LOSOWEGO {-}{-}{-}}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## --- AUC DLA LASU LOSOWEGO ---
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{rf\_preds }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{roc\_auc}\NormalTok{(}\AttributeTok{truth =}\NormalTok{ is\_hit, .pred\_1, }\AttributeTok{event\_level =} \StringTok{"second"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{print}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 3
+##   .metric .estimator .estimate
+##   <chr>   <chr>          <dbl>
+## 1 roc_auc binary         0.893
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{{-}{-}{-} AUC DLA XGBoost {-}{-}{-}}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## --- AUC DLA XGBoost ---
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{xgb\_preds }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{roc\_auc}\NormalTok{(}\AttributeTok{truth =}\NormalTok{ is\_hit, .pred\_1, }\AttributeTok{event\_level =} \StringTok{"second"}\NormalTok{) }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{print}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 3
+##   .metric .estimator .estimate
+##   <chr>   <chr>          <dbl>
+## 1 roc_auc binary         0.886
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\# Optymalizacja progu odcięcia dla Lasu Losowego}
+\NormalTok{threshold\_data }\OtherTok{\textless{}{-}}\NormalTok{ rf\_preds }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{threshold\_perf}\NormalTok{(}\AttributeTok{truth =}\NormalTok{ is\_hit, }\AttributeTok{estimate =}\NormalTok{ .pred\_1, }
+                 \AttributeTok{thresholds =} \FunctionTok{seq}\NormalTok{(}\FloatTok{0.1}\NormalTok{, }\FloatTok{0.9}\NormalTok{, }\AttributeTok{by =} \FloatTok{0.05}\NormalTok{), }
+                 \AttributeTok{metrics =} \FunctionTok{metric\_set}\NormalTok{(f\_meas))}
+
+\FunctionTok{ggplot}\NormalTok{(threshold\_data, }\FunctionTok{aes}\NormalTok{(}\AttributeTok{x =}\NormalTok{ .threshold, }\AttributeTok{y =}\NormalTok{ .estimate)) }\SpecialCharTok{+}
+  \FunctionTok{geom\_line}\NormalTok{(}\AttributeTok{color =} \StringTok{"firebrick"}\NormalTok{, }\AttributeTok{linewidth =} \DecValTok{1}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{geom\_point}\NormalTok{(}\AttributeTok{color =} \StringTok{"firebrick"}\NormalTok{, }\AttributeTok{size =} \DecValTok{2}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Optymalizacja progu odcięcia {-} Las Losowy"}\NormalTok{,}
+       \AttributeTok{x =} \StringTok{"Próg odcięcia prawdopodobieństwa (Threshold)"}\NormalTok{,}
+       \AttributeTok{y =} \StringTok{"Wartość metryki F1{-}Score"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{projekt-final_files/figure-latex/unnamed-chunk-8-2.pdf}}
+
+\subsubsection{Kalibracja
+prawdopodobieństw}\label{kalibracja-prawdopodobieux144stw}
+
+Krzywa kalibracji (\emph{calibration plot}) pokazuje, jak dobrze
+prawdopodobieństwa predykcji modelu odpowiadają rzeczywistym częstościom
+obserwowanych klas. Idealnie skalibrowany model leży na linii przekątnej
+(prawdopodobieństwo predykowane = obserwowana częstość). Odchylenia od
+tej linii informują o tym, czy model jest zbyt optymistyczny (krzywa
+powyżej przekątnej) lub zbyt pesymistyczny (poniżej przekątnej).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(probably)}
+
+\NormalTok{cal\_rf }\OtherTok{\textless{}{-}} \FunctionTok{cal\_plot\_breaks}\NormalTok{(}
+\NormalTok{  rf\_preds, }\AttributeTok{truth =}\NormalTok{ is\_hit, }\AttributeTok{estimate =}\NormalTok{ .pred\_1,}
+  \AttributeTok{event\_level =} \StringTok{"second"}\NormalTok{, }\AttributeTok{num\_breaks =} \DecValTok{10}
+\NormalTok{) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Kalibracja – Las Losowy"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{theme\_minimal}\NormalTok{()}
+
+\NormalTok{cal\_log }\OtherTok{\textless{}{-}} \FunctionTok{cal\_plot\_breaks}\NormalTok{(}
+\NormalTok{  log\_preds, }\AttributeTok{truth =}\NormalTok{ is\_hit, }\AttributeTok{estimate =}\NormalTok{ .pred\_1,}
+  \AttributeTok{event\_level =} \StringTok{"second"}\NormalTok{, }\AttributeTok{num\_breaks =} \DecValTok{10}
+\NormalTok{) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Kalibracja – Regresja Logistyczna"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{theme\_minimal}\NormalTok{()}
+
+\NormalTok{cal\_xgb }\OtherTok{\textless{}{-}} \FunctionTok{cal\_plot\_breaks}\NormalTok{(}
+\NormalTok{  xgb\_preds, }\AttributeTok{truth =}\NormalTok{ is\_hit, }\AttributeTok{estimate =}\NormalTok{ .pred\_1,}
+  \AttributeTok{event\_level =} \StringTok{"second"}\NormalTok{, }\AttributeTok{num\_breaks =} \DecValTok{10}
+\NormalTok{) }\SpecialCharTok{+} \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Kalibracja – XGBoost"}\NormalTok{) }\SpecialCharTok{+} \FunctionTok{theme\_minimal}\NormalTok{()}
+
+\FunctionTok{library}\NormalTok{(patchwork)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: pakiet 'patchwork' został zbudowany w wersji R 4.4.2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{cal\_rf }\SpecialCharTok{+}\NormalTok{ cal\_log }\SpecialCharTok{+}\NormalTok{ cal\_xgb}
+\end{Highlighting}
+\end{Shaded}
+
+\pandocbounded{\includegraphics[keepaspectratio]{projekt-final_files/figure-latex/unnamed-chunk-9-1.pdf}}
+
+\textbf{Wniosek z kalibracji:} Regresja logistyczna wykazuje wyraźne
+przekalibrowanie -- dla niskich prawdopodobieństw predykuje zbyt wysokie
+wartości (efekt agresywnego SMOTE), co tłumaczy jej bardzo niską
+precyzję. Las Losowy i XGBoost są lepiej skalibrowane w środkowym
+zakresie prawdopodobieństw, lecz w obszarze wysokich wartości
+(\textgreater0.7) mogą niedoszacowywać rzeczywistej częstości hitów ze
+względu na naturalną rzadkość tej klasy w danych testowych. Wyniki
+uzasadniają optymalizację progu odcięcia dla modelu wiodącego.
+
+\textbf{Wnioski z ewaluacji i porównania modeli:}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\item
+  \textbf{Regresja Logistyczna:} Mimo wysokiego wskaźnika ROC-AUC
+  (0.919), model ten w praktyce wykazuje bardzo niską użyteczność.
+  Bardzo wysoka czułość (Recall = 0.826) sugeruje, że model ``widzi hity
+  wszędzie''. Skutkuje to ekstremalnie niską precyzją (0.072) -- na
+  każdy poprawnie wskazany hit przypada kilkanaście fałszywych alarmów.
+  Jest to efekt uboczny SMOTE, który w połączeniu z liniowym charakterem
+  modelu doprowadził do nadmiernego rozszerzenia granicy decyzyjnej
+  klasy pozytywnej.
+\item
+  \textbf{Modele Drzewiaste (Las Losowy i XGBoost):} Wykazały się
+  znacznie większą stabilnością. Las Losowy osiągnął najwyższy F1-Score
+  (0.275). Choć jego czułość jest niższa niż w regresji, to precyzja
+  (0.204) jest prawie 3-krotnie wyższa. Oznacza to, że model ten
+  znacznie lepiej separuje ``prawdziwe hity'' od utworów, które jedynie
+  brzmią podobnie do nich.
+\item
+  \textbf{Optymalizacja progu:} Analiza wykresu optymalizacji progu dla
+  Lasu Losowego pokazuje, że domyślny próg 0.5 nie jest optymalny dla
+  F1-Score. Maksimum metryki osiągane jest dla wyższych progów
+  prawdopodobieństwa, co sugeruje, że model jest z natury nieco zbyt
+  optymistyczny po procesie SMOTE i warto podnieść poprzeczkę dla
+  klasyfikacji utworu jako hit.
+\end{enumerate}
+
+\subsection{Przeprowadzenie analizy popełnianych błędów przez
+wykorzystane modele
+predykcyjne}\label{przeprowadzenie-analizy-popeux142nianych-bux142ux119duxf3w-przez-wykorzystane-modele-predykcyjne}
+
+Analiza macierzy pomyłek (Confusion Matrix) pozwala na precyzyjne
+zidentyfikowanie natury błędów popełnianych przez modele.
+
+\emph{Wnioski z analizy błędów:} Głównym problemem wszystkich modeli
+jest wysoka liczba błędów \textbf{False Positive} (klasyfikowanie
+przeciętnych utworów jako hity). Zjawisko to ma głębokie uzasadnienie
+merytoryczne: - \textbf{Pułapka akustyczna:} Wiele utworów jest
+produkowanych zgodnie z obecnymi trendami (wysoka głośność, taneczność),
+co sprawia, że w przestrzeni cech akustycznych są one identyczne z
+hitami. - \textbf{Brakujące zmienne:} Model nie wie, czy utwór był
+promowany w radiu, czy artysta ma miliony fanów, ani czy piosenka stała
+się wiralem na TikToku. Te ``ukryte zmienne'' sprawiają, że utwory o
+identycznych parametrach audio mają skrajnie różną popularność. -
+\textbf{Błędy False Negative:} Są rzadsze, ale równie ciekawe -- dotyczą
+hitów, które ``brzmią inaczej'' (np. ballady akustyczne w zalewie muzyki
+elektronicznej). Model, ucząc się na trendach, ma trudności z wyłapaniem
+takich wyjątków (tzw. outliers).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(yardstick)}
+\FunctionTok{library}\NormalTok{(ggplot2)}
+
+\NormalTok{rf\_preds }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{conf\_mat}\NormalTok{(}\AttributeTok{truth =}\NormalTok{ is\_hit, }\AttributeTok{estimate =}\NormalTok{ .pred\_class) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(}\AttributeTok{type =} \StringTok{"heatmap"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_gradient}\NormalTok{(}\AttributeTok{low =} \StringTok{"white"}\NormalTok{, }\AttributeTok{high =} \StringTok{"firebrick"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Macierz pomyłek {-} Las Losowy"}\NormalTok{,}
+       \AttributeTok{x =} \StringTok{"Predykcja modelu"}\NormalTok{,}
+       \AttributeTok{y =} \StringTok{"Rzeczywista wartość"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Scale for fill is already present.
+## Adding another scale for fill, which will replace the existing scale.
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{projekt-final_files/figure-latex/unnamed-chunk-10-1.pdf}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{log\_preds }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{conf\_mat}\NormalTok{(}\AttributeTok{truth =}\NormalTok{ is\_hit, }\AttributeTok{estimate =}\NormalTok{ .pred\_class) }\SpecialCharTok{\%\textgreater{}\%}
+  \FunctionTok{autoplot}\NormalTok{(}\AttributeTok{type =} \StringTok{"heatmap"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_gradient}\NormalTok{(}\AttributeTok{low =} \StringTok{"white"}\NormalTok{, }\AttributeTok{high =} \StringTok{"steelblue"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Macierz pomyłek {-} Regresja Logistyczna"}\NormalTok{,}
+       \AttributeTok{x =} \StringTok{"Predykcja modelu"}\NormalTok{,}
+       \AttributeTok{y =} \StringTok{"Rzeczywista wartość"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Scale for fill is already present.
+## Adding another scale for fill, which will replace the existing scale.
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{projekt-final_files/figure-latex/unnamed-chunk-10-2.pdf}}
+
+\textbf{Wniosek:} Zestawienie macierzy pomyłek ujawnia fundamentalną
+różnicę w stylu błędów obu modeli. Regresja logistyczna generuje ogromną
+liczbę błędów False Positive -- model jest zbyt ``optymistyczny'' i
+przypisuje status hitu bardzo szerokim grupom utworów, co skutkuje niską
+precyzją przy względnie wysokiej czułości. Las losowy zachowuje się
+odwrotnie -- jest bardziej konserwatywny i rzadziej klasy pozytywnej,
+przez co ma wyższą precyzję przy niższej czułości. W praktycznym
+zastosowaniu model lasu losowego jest bezpieczniejszy: lepiej
+identyfikuje prawdziwe potencjalne hity, minimalizując ryzyko fałszywych
+rekomendacji, co jest istotne w kontekście decyzji biznesowych wytwórni
+muzycznej.
+
+\subsection{Analiza wyjaśnialności decyzji modeli
+predykcyjnych}\label{analiza-wyjaux15bnialnoux15bci-decyzji-modeli-predykcyjnych}
+
+Modele oparte na drzewach decyzyjnych często określane są mianem
+``czarnych skrzynek''. Aby zrozumieć logikę stojącą za predykcjami
+wybranego modelu wiodącego (Las Losowy), przeprowadzono analizę ważności
+cech (\textbf{Variable Importance, VIP}). Informuje ona o tym, które
+zmienne najbardziej przyczyniają się do poprawy czystości węzłów w
+procesie budowania drzew.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(vip)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: pakiet 'vip' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Dołączanie pakietu: 'vip'
+\end{verbatim}
+
+\begin{verbatim}
+## Następujący obiekt został zakryty z 'package:utils':
+## 
+##     vi
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(ggplot2)}
+
+\FunctionTok{vip}\NormalTok{(rf\_fit}\SpecialCharTok{$}\NormalTok{fit, }\AttributeTok{num\_features =} \DecValTok{20}\NormalTok{, }\AttributeTok{geom =} \StringTok{"col"}\NormalTok{, }
+    \AttributeTok{mapping =} \FunctionTok{aes\_string}\NormalTok{(}\AttributeTok{fill =} \StringTok{"Variable"}\NormalTok{)) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{() }\SpecialCharTok{+}
+  \FunctionTok{scale\_fill\_viridis\_d}\NormalTok{(}\AttributeTok{option =} \StringTok{"magma"}\NormalTok{, }\AttributeTok{guide =} \StringTok{"none"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{labs}\NormalTok{(}\AttributeTok{title =} \StringTok{"Ważność cech (Top 20) {-} Model Lasu Losowego"}\NormalTok{,}
+       \AttributeTok{x =} \StringTok{"Ważność (Impurity)"}\NormalTok{,}
+       \AttributeTok{y =} \StringTok{"Zmienna objaśniająca"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: `aes_string()` was deprecated in ggplot2 3.0.0.
+## i Please use tidy evaluation idioms with `aes()`.
+## i See also `vignette("ggplot2-in-packages")` for more information.
+## This warning is displayed once every 8 hours.
+## Call `lifecycle::last_lifecycle_warnings()` to see where this warning was
+## generated.
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{projekt-final_files/figure-latex/unnamed-chunk-11-1.pdf}}
+
+\textbf{Interpretacja wyników ważności cech:} 1. \textbf{Dominacja
+parametrów audio:} Najważniejszymi predyktorami okazały się
+\texttt{instrumentalness} oraz \texttt{acousticness}. Sugeruje to, że
+dla popularności kluczowe jest to, czy utwór ma charakter ``radiowy''
+(wokalny, elektronicznie przetworzony). Utwory czysto instrumentalne lub
+o surowym, akustycznym brzmieniu rzadziej przebijają się do progu
+popularności \textgreater= 75. 2. \textbf{Parametry techniczne:} Wysoka
+pozycja \texttt{duration\_ms} oraz \texttt{loudness} potwierdza rynkowe
+trendy -- hity mają zazwyczaj określoną długość (ok. 3 minut) i są
+poddawane agresywnemu masteringowi (tzw. Loudness War). 3.
+\textbf{Marginalizacja gatunków:} Co niezwykle istotne, przynależność do
+konkretnego gatunku (\texttt{track\_genre}) ma dla modelu mniejsze
+znaczenie niż parametry dźwiękowe. Najważniejszym gatunkiem okazał się
+\texttt{dance}, co jest spójne z obecną dominacją muzyki tanecznej w
+głównym nurcie.
+
+\subsection{Podsumowanie i sformułowanie
+wniosków}\label{podsumowanie-i-sformuux142owanie-wnioskuxf3w}
+
+Projekt miał na celu zbadanie, w jakim stopniu metadane akustyczne
+Spotify pozwalają przewidzieć sukces komercyjny utworu. Przeprowadzona
+analiza prowadzi do następujących konkluzji:
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\tightlist
+\item
+  \textbf{Możliwości predykcyjne:} Budowa modelu o wysokiej precyzji
+  (Precision) jest niemożliwa przy użyciu wyłącznie cech akustycznych.
+  Choć model potrafi skutecznie wyselekcjonować ``kandydatów na hity''
+  (wysoki ROC-AUC), to rzeczywisty sukces zależy od czynników
+  pozamuzycznych, takich jak kampanie marketingowe, renoma artysty czy
+  trendy w mediach społecznościowych.
+\item
+  \textbf{Przewaga modeli nieliniowych:} Algorytmy zespołowe (Random
+  Forest, XGBoost) zdecydowanie lepiej radzą sobie ze specyfiką danych
+  muzycznych niż modele liniowe. Pozwalają one na uchwycenie złożonych
+  interakcji między głośnością, energią a tanecznością, które wspólnie
+  budują ``potencjał komercyjny''.
+\item
+  \textbf{Rekomendacje praktyczne:} Z punktu widzenia wytwórni
+  muzycznej, model taki jak Las Losowy może służyć jako narzędzie do
+  wstępnej filtracji utworów (``akustyczny filtr jakości''), jednak
+  ostateczna decyzja o inwestycji musi być poparta analizą trendów
+  rynkowych i potencjału wizerunkowego twórcy.
+\end{enumerate}
+
+\subsection{Podstawowe wdrożenie modelu wybranego na podstawie
+przeprowadzonej ewaluacji oraz przeprowadzenie testu
+predykcyjnego}\label{podstawowe-wdroux17cenie-modelu-wybranego-na-podstawie-przeprowadzonej-ewaluacji-oraz-przeprowadzenie-testu-predykcyjnego}
+
+Ostatnim etapem projektu było środowiskowe wdrożenie wybranego modelu
+Lasu Losowego i weryfikacja jego działania w praktyce. W tym celu
+stworzono syntetyczny profil ``nowej piosenki'', przypisując jej cechy
+charakterystyczne dla współczesnych hitów radiowych (wysoka taneczność,
+duża głośność, wysoka energia, brak instrumentalności, gatunek pop).
+Nowa obserwacja została przepuszczona przez zdefiniowaną wcześniej
+recepturę (standaryzacja, kodowanie), a następnie poddana predykcji.
+
+Dodatkowo, wykorzystano narzędzia wyjaśnialności lokalnej (DALEX),
+generując wykres dekompozycji predykcji (Waterfall plot) dla testowanego
+utworu. Obrazuje on bezpośredni wpływ poszczególnych atrybutów nowej
+obserwacji na finalną decyzję podjętą przez model.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(dplyr)}
+\FunctionTok{library}\NormalTok{(DALEX)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: pakiet 'DALEX' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{verbatim}
+## Welcome to DALEX (version: 2.5.3).
+## Find examples and detailed introduction at: http://ema.drwhy.ai/
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Dołączanie pakietu: 'DALEX'
+\end{verbatim}
+
+\begin{verbatim}
+## Następujący obiekt został zakryty z 'package:dplyr':
+## 
+##     explain
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{library}\NormalTok{(DALEXtra)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning: pakiet 'DALEXtra' został zbudowany w wersji R 4.4.3
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{nowa\_piosenka }\OtherTok{\textless{}{-}} \FunctionTok{tibble}\NormalTok{(}
+  \AttributeTok{duration\_ms =} \DecValTok{210000}\NormalTok{,}
+  \AttributeTok{danceability =} \FloatTok{0.85}\NormalTok{,}
+  \AttributeTok{energy =} \FloatTok{0.90}\NormalTok{,}
+  \AttributeTok{key =} \DecValTok{5}\NormalTok{,}
+  \AttributeTok{loudness =} \SpecialCharTok{{-}}\FloatTok{4.5}\NormalTok{,}
+  \AttributeTok{mode =} \DecValTok{1}\NormalTok{,}
+  \AttributeTok{speechiness =} \FloatTok{0.05}\NormalTok{,}
+  \AttributeTok{acousticness =} \FloatTok{0.10}\NormalTok{,}
+  \AttributeTok{instrumentalness =} \FloatTok{0.00}\NormalTok{,}
+  \AttributeTok{liveness =} \FloatTok{0.15}\NormalTok{,}
+  \AttributeTok{valence =} \FloatTok{0.75}\NormalTok{,}
+  \AttributeTok{tempo =} \DecValTok{120}\NormalTok{,}
+  \AttributeTok{time\_signature =} \DecValTok{4}\NormalTok{,}
+  \AttributeTok{explicit =} \DecValTok{0}\NormalTok{,}
+  \AttributeTok{track\_genre =} \StringTok{"pop"}
+\NormalTok{)}
+
+\NormalTok{nowa\_piosenka\_processed }\OtherTok{\textless{}{-}} \FunctionTok{bake}\NormalTok{(prep\_rec, }\AttributeTok{new\_data =}\NormalTok{ nowa\_piosenka)}
+
+\NormalTok{test\_klasa }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(rf\_fit, }\AttributeTok{new\_data =}\NormalTok{ nowa\_piosenka\_processed)}
+\NormalTok{test\_prawdopodobienstwo }\OtherTok{\textless{}{-}} \FunctionTok{predict}\NormalTok{(rf\_fit, }\AttributeTok{new\_data =}\NormalTok{ nowa\_piosenka\_processed, }\AttributeTok{type =} \StringTok{"prob"}\NormalTok{)}
+
+\FunctionTok{cat}\NormalTok{(}\StringTok{"}\SpecialCharTok{\textbackslash{}n}\StringTok{{-}{-}{-} WYNIK TESTU WDROŻENIOWEGO {-}{-}{-}}\SpecialCharTok{\textbackslash{}n}\StringTok{"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## --- WYNIK TESTU WDROŻENIOWEGO ---
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(test\_prawdopodobienstwo)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 2
+##   .pred_0 .pred_1
+##     <dbl>   <dbl>
+## 1   0.311   0.689
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\FunctionTok{print}\NormalTok{(test\_klasa)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## # A tibble: 1 x 1
+##   .pred_class
+##   <fct>      
+## 1 1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{rf\_explainer }\OtherTok{\textless{}{-}} \FunctionTok{explain\_tidymodels}\NormalTok{(}
+\NormalTok{  rf\_fit,}
+  \AttributeTok{data =}\NormalTok{ train\_processed }\SpecialCharTok{\%\textgreater{}\%} \FunctionTok{select}\NormalTok{(}\SpecialCharTok{{-}}\NormalTok{is\_hit),}
+  \AttributeTok{y =} \FunctionTok{as.numeric}\NormalTok{(}\FunctionTok{as.character}\NormalTok{(train\_processed}\SpecialCharTok{$}\NormalTok{is\_hit)),}
+  \AttributeTok{label =} \StringTok{"Random Forest"}\NormalTok{,}
+  \AttributeTok{verbose =} \ConstantTok{FALSE}
+\NormalTok{)}
+
+\NormalTok{rf\_parts }\OtherTok{\textless{}{-}} \FunctionTok{predict\_parts}\NormalTok{(}\AttributeTok{explainer =}\NormalTok{ rf\_explainer,}
+                          \AttributeTok{new\_observation =}\NormalTok{ nowa\_piosenka\_processed,}
+                          \AttributeTok{type =} \StringTok{"break\_down"}\NormalTok{)}
+
+\FunctionTok{plot}\NormalTok{(rf\_parts) }\SpecialCharTok{+}
+  \FunctionTok{ggtitle}\NormalTok{(}\StringTok{"Wykres wodospadowy {-} Wyjaśnialność lokalna nowej piosenki"}\NormalTok{) }\SpecialCharTok{+}
+  \FunctionTok{theme\_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## `height` was translated to `width`.
+\end{verbatim}
+
+\pandocbounded{\includegraphics[keepaspectratio]{projekt-final_files/figure-latex/unnamed-chunk-12-1.pdf}}
+
+\textbf{Wniosek:} Test wdrożeniowy pokazuje, że model Lasu Losowego
+poprawnie zakwalifikował syntetyczny profil ``piosenki pop'' jako
+kandydata na hit, przypisując mu wysokie prawdopodobieństwo klasy 1.
+Wykres wodospadowy (Waterfall / Break Down) dostarcza wyjaśnienia
+lokalnego tej konkretnej predykcji: widać, które cechy nowej piosenki
+(np. niska \texttt{instrumentalness}, wysoka \texttt{loudness}, gatunek
+\texttt{pop}) ``pchnęły'' decyzję modelu w kierunku klasy pozytywnej, a
+które ją hamowały. Taka interpretacja czyni model nie tylko narzędziem
+predykcji, ale też źródłem rekomendacji artystycznych -- wytwórnia może
+na tej podstawie identyfikować, które atrybuty nowo nagranego utworu
+wymagają korekty, aby zwiększyć jego szanse komercyjne.
+
+\subsection{Literatura}\label{literatura}
+
+{[}1{]} Dhanaraj, R., \& Logan, B. (2005). \emph{Automatic Prediction of
+Hit Songs}. Proceedings of the 6th International Symposium on Music
+Information Retrieval (ISMIR 2005), 488--491.
+
+{[}2{]} Interiano, M., Kazemi, K., Wang, L., Yang, J., Yu, Z., \&
+Komarova, N. L. (2018). \emph{Musical trends and predictability of
+success in contemporary songs in and out of the top charts}. Royal
+Society Open Science, 5(5), 171274.
+\url{https://doi.org/10.1098/rsos.171274}
+
+{[}3{]} Chen, T., \& Guestrin, C. (2016). \emph{XGBoost: A Scalable Tree
+Boosting System}. Proceedings of the 22nd ACM SIGKDD International
+Conference on Knowledge Discovery and Data Mining, 785--794.
+\url{https://doi.org/10.1145/2939672.2939785}
+
+{[}4{]} Pachet, F., \& Roy, P. (2008). \emph{Hit Song Science Is Not Yet
+a Science}. Proceedings of the 9th International Society for Music
+Information Retrieval Conference (ISMIR 2008), 355--360.
+
+{[}5{]} Chawla, N. V., Bowyer, K. W., Hall, L. O., \& Kegelmeyer, W. P.
+(2002). \emph{SMOTE: Synthetic Minority Over-sampling Technique}.
+Journal of Artificial Intelligence Research, 16, 321--357.
+\url{https://doi.org/10.1613/jair.953}
+
+\end{document}
