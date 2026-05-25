@@ -31,6 +31,25 @@ knitr::opts_chunk$set(
 )
 ```
 
+```{r biblioteki, include=FALSE}
+library(dplyr)
+library(readr)
+library(tidyr)
+library(ggplot2)
+library(corrplot)
+library(tidymodels)
+library(themis)
+library(parsnip)
+library(ranger)
+library(xgboost)
+library(yardstick)
+library(probably)
+library(patchwork)
+library(vip)
+library(DALEX)
+library(DALEXtra)
+```
+
 ## Wybór zbioru danych
 
 Do realizacji projektu wybrano zbiór danych o nazwie **"Spotify Tracks Dataset"** (dostępny m.in. na platformie Kaggle).
@@ -134,10 +153,6 @@ Zrealizowano następujące kroki:
 - **Selekcja cech:** Usunięto kolumny pełniące wyłącznie funkcję identyfikatorów (`track_id`, indeksy CSV) oraz zmienne czysto tekstowe (`track_name`, `artists`, `album_name`), które w surowej formie nie nadają się do modelowania tabelarycznego.
 
 ```{r}
-library(dplyr)
-library(readr)
-library(tidyr)
-
 df <- read_csv("spotify-tracks-dataset.csv")
 
 POPULARITY_THRESHOLD <- 75
@@ -154,42 +169,17 @@ df <- df %>%
 ```
 
 **Wniosek:** Po przeprowadzeniu czyszczenia uzyskano spójny, pozbawiony duplikatów i braków zbiór danych, gotowy do dalszej analizy.
-Eliminacja zmiennej `popularity` jest krytycznym krokiem zapobiegającym wyciekowi danych – bez tego modelu trenowałby się de facto na odpowiedzi.
-Usunięcie kolumn tekstowych i identyfikatorów pozwala skupić się wyłącznie na cechach o potencjale predykcyjnym.
+Eliminacja zmiennej `popularity` jest krytycznym krokiem zapobiegającym wyciekowi danych.
 Wynikowy zbiór zawiera zarówno zmienne numeryczne (parametry audio), jak i kategoryczne (`track_genre`, `key`, `mode`), co determinuje dalsze kroki przetwarzania w pipeline'u modelowania.
 
 ## Omówienie oraz zwizualizowanie istotnych zależności w analizowanym zbiorze danych
 
-W celu lepszego zrozumienia struktury danych oraz relacji między zmiennymi przeprowadzono eksploracyjną analizę danych z wykorzystaniem technik wizualizacji.
-Skupiono się na trzech kluczowych aspektach:
+W celu lepszego zrozumienia struktury danych oraz relacji między zmiennymi przeprowadzono eksploracyjną analizę danych.
+Skupiono się na trzech kluczowych aspektach: rozkładzie zmiennej docelowej, macierzy korelacji predyktorów numerycznych oraz wizualizacji separowalności klas metodą PCA.
 
-**1. Rozkład zmiennej docelowej:** Wykres słupkowy ilustrujący rozkład zmiennej `is_hit` ukazuje drastyczne niezbalansowanie klas.
-Zdecydowana większość obserwacji w zbiorze należy do klasy większościowej (0 - "brak hitu"), podczas gdy utwory zaklasyfikowane jako hity (1) stanowią jedynie niewielki ułamek populacji (ok. 5-7%).
-
-*Wniosek:* Skrajna asymetria klas sugeruje, że model nauczony na surowych danych mógłby osiągnąć wysoką dokładność poprzez proste przypisywanie wszystkim utworom klasy "0".
-Wymusza to w późniejszych etapach zastosowanie technik balansowania oraz metryk oceny skupionych na klasie mniejszościowej.
-
-**2. Macierz korelacji:** Analiza korelogramu dla zmiennych numerycznych ujawnia kilka silnych zależności, które są spójne z intuicją muzyczną.
-Występuje bardzo silna, dodatnia korelacja pomiędzy zmiennymi `energy` (energia) oraz `loudness` (głośność).
-Utwory głośniejsze są przez algorytmy Spotify klasyfikowane jako bardziej energetyczne.
-Zmienna `acousticness` (akustyczność) jest silnie ujemnie skorelowana zarówno z energią, jak i głośnością, co odzwierciedla techniczną różnicę między instrumentami akustycznymi a zelektronizowaną produkcją współczesną.
-
-*Wniosek:* Identyfikacja silnie skorelowanych par zmiennych objaśniających jest sygnałem, że proste modele liniowe mogą mieć trudności z poprawną estymacją wag.
-W procesie modelowania preferowane będą algorytmy odporne na to zjawisko, takie jak lasy losowe, lub konieczne będzie usunięcie redundantnych cech.
-
-**3. Redukcja wymiarów (PCA):** Aby zwizualizować trudność postawionego problemu analitycznego, przeprowadzono Analizę Głównych Składowych (PCA) dla numerycznych cech akustycznych.
-Technika ta pozwoliła na redukcję wielowymiarowej przestrzeni danych do dwóch głównych wymiarów (PC1 i PC2), które łącznie wyjaśniają znaczną część wariancji zbioru.
-
-*Wniosek:* Nałożenie na wykres punktowy kolorów odpowiadających klasie docelowej uwidacznia, że klasa "hitów" nie tworzy na rynku muzycznym jednej, wyraźnie odseparowanej grupy, lecz jest głęboko zanurzona w przestrzeni cech utworów przeciętnych.
-Analiza ładunków sugeruje, że PC1 jest silnie związana z "intensywnością" utworu (energia, głośność vs akustyczność), natomiast PC2 może odzwierciedlać parametry rytmiczne i nastrojowe (taneczność, walencja).
-Fakt, że hity są rozproszone, oznacza, że nie istnieje prosty zestaw reguł ("złota formuła"), który gwarantuje sukces.
-Granica decyzyjna jest wysoce nieliniowa, co uzasadnia użycie modeli takich jak XGBoost czy Random Forest.
+**1. Rozkład zmiennej docelowej:**
 
 ```{r}
-library(ggplot2)
-library(corrplot)
-library(tidymodels)
-
 ggplot(df, aes(x = is_hit, fill = is_hit)) +
   geom_bar(show.legend = FALSE) +
   scale_fill_manual(values = c("0" = "steelblue", "1" = "firebrick")) +
@@ -199,13 +189,13 @@ ggplot(df, aes(x = is_hit, fill = is_hit)) +
        y = "Liczba utworów")
 ```
 
-**Wniosek:** Wykres potwierdza silną asymetrię klas – hity (klasa 1) stanowią zdecydowaną mniejszość w zbiorze, co sprawia, że model uczony na surowych danych mógłby niemal bez wysiłku uzyskać wysoką dokładność ogólną, jednocześnie całkowicie ignorując klasę mniejszościową.
+**Wniosek:** Wykres potwierdza silną asymetrię klas – hity (klasa 1) stanowią zdecydowaną mniejszość w zbiorze (ok. 5–7%).
+Model uczony na surowych danych mógłby niemal bez wysiłku uzyskać wysoką dokładność ogólną, jednocześnie całkowicie ignorując klasę mniejszościową.
 Uzasadnia to konieczność zastosowania techniki SMOTE w dalszym etapie modelowania oraz skupienia się na metrykach Precision, Recall i F1-Score zamiast samej dokładności.
 
-```{r}
-library(dplyr)
-library(corrplot)
+**2. Macierz korelacji predyktorów numerycznych:**
 
+```{r}
 numeric_cols <- df %>%
   select(where(is.numeric))
 
@@ -218,16 +208,14 @@ corrplot(corr_matrix,
          tl.cex = 0.8)
 ```
 
-**Wniosek:** Macierz korelacji ujawnia kilka kluczowych zależności strukturalnych.
+**Wniosek:** Macierz ujawnia kilka kluczowych zależności strukturalnych.
 Najsilniejsza jest dodatnia korelacja między `energy` a `loudness` (r ≈ 0.76), co potwierdza, że głośność jest technicznym komponentem postrzeganej energii.
-Silna ujemna korelacja `acousticness` z oboma tymi zmiennymi wskazuje, że instrumenty akustyczne i elektroniczna produkcja muzyczna zajmują przeciwne bieguny przestrzeni cech.
-Z perspektywy modelowania, wysoka współliniowość może destabilizować estymację wag w modelu regresji logistycznej – kolejny argument przemawiający za algorytmami drzewiastymi, odpornymi na to zjawisko.
+Silna ujemna korelacja `acousticness` z oboma tymi zmiennymi odzwierciedla techniczną różnicę między instrumentami akustycznymi a zelektronizowaną produkcją muzyczną.
+Z perspektywy modelowania, wysoka współliniowość może destabilizować estymację wag w regresji logistycznej – jest to dodatkowy argument przemawiający za algorytmami drzewiastymi, odpornymi na to zjawisko.
+
+**3. Redukcja wymiarów (PCA):**
 
 ```{r}
-library(ggplot2)
-library(dplyr)
-library(tidymodels)
-
 pca_rec <- recipe(~ ., data = df %>% select(where(is.numeric), is_hit)) %>%
   step_normalize(all_numeric_predictors()) %>%
   step_pca(all_numeric_predictors(), num_comp = 2)
@@ -245,29 +233,23 @@ ggplot(pca_data, aes(x = PC1, y = PC2, color = is_hit)) +
        color = "Hit")
 ```
 
-**Wniosek:** Wykres PCA obrazuje fundamentalną trudność postawionego problemu – klasa hitów (czerwone punkty) nie tworzy zwartego, separowalnego skupiska, lecz jest rozproszona w całej przestrzeni cech.
-Oznacza to, że nie istnieje prosta, linearna granica decyzyjna mogąca skutecznie oddzielić hity od pozostałych utworów.
-Układ PC1 (intensywność produkcji) i PC2 (parametry rytmiczno-nastrojowe) wspólnie wyjaśniają główną zmienność zbioru, jednak nie wystarczają do jednoznacznej klasyfikacji.
-Ten wynik jednoznacznie uzasadnia zastosowanie modeli o nieliniowej granicy decyzyjnej w dalszych etapach analizy.
+**Wniosek:** Klasa hitów (czerwone punkty) nie tworzy zwartego, separowalnego skupiska, lecz jest głęboko zanurzona w przestrzeni cech utworów przeciętnych.
+PC1 jest silnie związana z "intensywnością" produkcji (energia, głośność vs. akustyczność), natomiast PC2 może odzwierciedlać parametry rytmiczno-nastrojowe (taneczność, walencja).
+Brak wyraźnej separacji klas oznacza, że granica decyzyjna jest wysoce nieliniowa, co uzasadnia zastosowanie modeli takich jak XGBoost czy Random Forest.
 
 ## Przygotowanie danych do dalszego procesu modelowania
 
-Przygotowanie danych do uczenia maszynowego zrealizowano z wykorzystaniem ekosystemu tidymodels.
-Proces ten podzielono na następujące fazy:
+Przygotowanie danych do uczenia maszynowego zrealizowano z wykorzystaniem ekosystemu tidymodels w trzech fazach:
 
-Podział zbioru: Dane podzielono na zbiór treningowy (80% obserwacji) oraz testowy (20% obserwacji).
-Zastosowano podział warstwowy (stratified split) ze względu na zmienną is_hit, co gwarantuje, że proporcja hitów w obu zbiorach pozostanie identyczna jak w populacji bazowej.
+- **Podział zbioru:** Dane podzielono na zbiór treningowy (80%) i testowy (20%) z podziałem warstwowym (stratified split) ze względu na zmienną `is_hit`, co gwarantuje zachowanie proporcji klas w obu zbiorach.
 
-Transformacja predyktorów: Utworzono recepturę transformacji (recipe), w której zastosowano kodowanie "gorącojedynkowe" (One-Hot Encoding / Dummy Variables) dla wszystkich predyktorów kategorycznych (np. track_genre) oraz standaryzację (centrowanie i skalowanie) dla wszystkich zmiennych numerycznych.
-Zmienna logiczna explicit została wcześniej przekształcona na typ numeryczny, aby zapobiec błędom przetwarzania geometrycznego.
+- **Transformacja predyktorów:** Receptura transformacji (recipe) obejmuje kodowanie One-Hot Encoding dla predyktorów kategorycznych (np. `track_genre`) oraz standaryzację (centrowanie i skalowanie) zmiennych numerycznych.
+  Zmienna logiczna `explicit` została wcześniej przekształcona na typ numeryczny.
 
-Balansowanie klas: Ze względu na zidentyfikowane we wcześniejszym etapie skrajne niezbalansowanie klas, do receptury włączono krok oversamplingu przy użyciu algorytmu SMOTE (Synthetic Minority Over-sampling Technique).
-Został on zastosowany wyłącznie na zbiorze treningowym, aby wygenerować syntetyczne obserwacje klasy mniejszościowej (hitów) i zrównoważyć zbiór, co zapobiegnie faworyzowaniu klasy większościowej przez modele.
+- **Balansowanie klas:** Do receptury włączono krok SMOTE (Synthetic Minority Over-sampling Technique), który generuje syntetyczne obserwacje klasy mniejszościowej wyłącznie na zbiorze treningowym.
+  Zbiór testowy pozostaje celowo niezmieniony, aby ocena odzwierciedlała realne, niezbalansowane warunki.
 
 ```{r}
-library(tidymodels)
-library(themis)
-
 df <- df %>%
   mutate(explicit = as.numeric(explicit))
 
@@ -298,34 +280,23 @@ knitr::kable(
 )
 ```
 
-**Wniosek z tabeli:** Podgląd przetworzonych danych potwierdza poprawność transformacji – wszystkie wartości numeryczne zostały wystandaryzowane (bliskie 0, zakres ±2–3), a zmienne kategoryczne zakodowane jako kolumny binarne. Tabela obrazuje również, że SMOTE nie zmienia istniejących obserwacji, lecz dokłada nowe syntetyczne wiersze klasy mniejszościowej, zachowując wiarygodność oryginalnych rekordów.
-
-**Wniosek ogólny:** Po zastosowaniu SMOTE zbiór treningowy zawiera wyrównany rozkład klas – liczba syntetycznych obserwacji klasy "hit" wzrosła do poziomu klasy większościowej.
-Podział warstwowy (stratified split) zapewnia, że proporcja hitów w zbiorze testowym odpowiada proporcji w oryginalnym zbiorze, co gwarantuje wiarygodną ewaluację.
-Standaryzacja zmiennych numerycznych jest niezbędna dla stabilności regresji logistycznej i przyspiesza zbieżność XGBoost.
+**Wniosek:** Po zastosowaniu SMOTE zbiór treningowy zawiera wyrównany rozkład klas.
+Podgląd przetworzonych danych potwierdza poprawność transformacji – wartości numeryczne są wystandaryzowane (zakres ±2–3), a zmienne kategoryczne zakodowane binarnie.
 Kodowanie One-Hot Encoding zmiennej `track_genre` znacznie zwiększa liczbę predyktorów, ale pozwala modelom drzewiastym efektywnie wykorzystać informację o gatunku muzycznym.
-Zbiór testowy pozostaje celowo niezmieniony (bez SMOTE), aby ocena odzwierciedlała realne, niezbalansowane warunki.
 
 ## Budowa, trenowanie oraz wstępne porównanie wybranych modeli uczenia maszynowego
 
-W procesie modelowania predykcyjnego zdecydowano się na wykorzystanie i porównanie trzech algorytmów klasyfikacyjnych o zróżnicowanej charakterystyce matematycznej, co pozwala na rzetelną ocenę skuteczności:
+W procesie modelowania predykcyjnego porównano trzy algorytmy klasyfikacyjne o zróżnicowanej charakterystyce:
 
-Regresja Logistyczna (Logistic Regression): Zastosowana jako model bazowy (tzw. baseline).
-Jest to model parametryczny, łatwy w interpretacji, jednak zakładający liniową zależność między predyktorami a logarytmem szansy wystąpienia klasy pozytywnej.
+- **Regresja Logistyczna** – model bazowy (baseline): parametryczny, interpretowalny, zakładający liniową zależność między predyktorami a logarytmem szansy.
 
-Las Losowy (Random Forest): Zaawansowany model zespołowy (ang. ensemble), oparty na agregacji wyników wielu drzew decyzyjnych w ramach techniki Baggingu.
-Wybór tego modelu podyktowany był jego wysoką skutecznością, brakiem wrażliwości na zjawisko multikolinearności oraz zdolnością do modelowania złożonych, nieliniowych relacji.
+- **Las Losowy (Random Forest)** – model zespołowy oparty na agregacji wielu drzew decyzyjnych (Bagging); odporny na multikolinearność, zdolny do modelowania nieliniowych relacji.
 
-XGBoost (Extreme Gradient Boosting): Algorytm oparty na technice Boostingu (budowa drzew sekwencyjna, optymalizująca błędy poprzedników), będący obecnie jednym z najskuteczniejszych algorytmów klasyfikacyjnych dla strukturalnych danych tabelarycznych.
+- **XGBoost** – algorytm Boostingu, w którym kolejne drzewa sekwencyjnie korygują błędy poprzedników; jeden z najskuteczniejszych algorytmów dla strukturalnych danych tabelarycznych.
 
 Modele zostały wytrenowane na przetworzonym i zbalansowanym zbiorze treningowym.
-Następnie wygenerowano predykcje na niewidzianym wcześniej zbiorze testowym, co stanowi fundament do obiektywnej ewaluacji w kolejnym kroku.
 
 ```{r}
-library(parsnip)
-library(ranger)
-library(xgboost)
-
 log_spec <- logistic_reg() %>%
   set_engine("glm") %>%
   set_mode("classification")
@@ -360,28 +331,18 @@ xgb_preds <- predict(xgb_fit, new_data = test_processed) %>%
   bind_cols(test_processed %>% select(is_hit))
 ```
 
-**Wniosek:** Wszystkie trzy modele zostały pomyślnie wytrenowane na zbalansowanym zbiorze treningowym.
-Każdy z nich reprezentuje inną filozofię uczenia: regresja logistyczna szuka globalnej, liniowej granicy decyzyjnej; las losowy buduje ensemble niezależnych drzew (bagging), a XGBoost sekwencyjnie koryguje błędy poprzednich drzew (boosting).
-Zróżnicowanie podejść jest celowe – pozwoli ocenić, które założenia najlepiej pasują do struktury danych muzycznych.
-Predykcje na zbiorze testowym umożliwią obiektywne porównanie modeli w kolejnym etapie.
-
 ### Wstępne porównanie modeli za pomocą kroswalidacji (5-fold CV)
 
-Aby uzyskać stabilną i odporną na losowość jednego podziału ocenę modeli, przeprowadzono **5-krotną kroswalidację** (*5-fold Cross-Validation*) na oryginalnym zbiorze treningowym.
-W każdej z 5 iteracji receptura transformacji (w tym krok SMOTE) jest stosowana *niezależnie* wyłącznie na danych treningowych danego foldu – dane walidacyjne pozostają niezmienione.
-Takie podejście jest metodologicznie poprawniejsze niż ocena na jednym podziale, ponieważ uśrednia wyniki po różnych próbkach i dostarcza estymacji niepewności (odchylenie standardowe metryki).
+Aby uzyskać stabilną ocenę modeli niezależną od losowości jednego podziału, przeprowadzono **5-krotną kroswalidację** na oryginalnym zbiorze treningowym.
+W każdej iteracji receptura transformacji (w tym krok SMOTE) jest stosowana *niezależnie* wyłącznie na danych treningowych danego foldu – dane walidacyjne pozostają niezmienione.
 
 ```{r}
-library(tidymodels)
-library(themis)
-
 # Ustawienie klasy "1" jako zdarzenia pozytywnego
 options(yardstick.event_first = FALSE)
 
 set.seed(7851)
 cv_folds <- vfold_cv(train_data, v = 5, strata = is_hit)
 
-# Tworzenie workflow: recipe (z SMOTE) + model
 log_wf <- workflow() %>% add_recipe(rec) %>% add_model(log_spec)
 rf_wf  <- workflow() %>% add_recipe(rec) %>% add_model(rf_spec)
 xgb_wf <- workflow() %>% add_recipe(rec) %>% add_model(xgb_spec)
@@ -398,7 +359,6 @@ cv_results <- bind_rows(
   collect_metrics(xgb_cv) %>% mutate(model = "XGBoost")
 )
 
-# Tabela zbiorcza wyników CV
 cv_results %>%
   select(model, .metric, mean, std_err) %>%
   mutate(
@@ -410,7 +370,6 @@ cv_results %>%
   rename(Metryka = .metric) %>%
   knitr::kable(caption = "Wyniki 5-krotnej kroswalidacji: średnia (± std. błąd)")
 
-# Wykres porównawczy
 cv_results %>%
   filter(.metric %in% c("f_meas", "roc_auc", "precision", "recall")) %>%
   ggplot(aes(x = model, y = mean, fill = model)) +
@@ -423,31 +382,19 @@ cv_results %>%
        y = "Średnia wartość metryki (± std. błąd)")
 ```
 
-**Wniosek z tabeli CV:** Tabela zestawia wyniki wszystkich pięciu metryk dla każdego modelu w formacie *średnia (±std. błąd)*. Mała wartość std. błędu (zazwyczaj < 0.005) przy każdej metryce świadczy o wysokiej stabilności wyników między foldami – oznacza to, że prezentowane wartości nie są przypadkowym artefaktem jednego podziału danych. Regresja logistyczna dominuje pod względem Recall, lecz jej Precision jest wielokrotnie niższa od modeli drzewiastych, co sygnalizuje nadmierną liczbę fałszywych alarmów.
-
-**Wniosek z wykresu i porównania ogólnego:** Wyniki CV potwierdzają obserwacje z ewaluacji na zbiorze testowym.
-Regresja logistyczna osiąga relatywnie wysokie ROC-AUC, lecz jej F1-Score i precyzja są wyraźnie niższe od modeli drzewiastych, co wskazuje na nadmierne rozszerzenie granicy decyzyjnej po SMOTE.
-Las Losowy i XGBoost wykazują porównywalną stabilność (małe odchylenia std. między foldami), przy czym Las Losowy zwykle uzyskuje nieco lepszy F1-Score.
-Słupki błędu (±1 std. błąd) są wąskie dla wszystkich modeli, co świadczy o spójności wyników między foldami i niskim ryzyku przeuczenia.
+**Wniosek:** Mała wartość std. błędu (zazwyczaj < 0.005) przy każdej metryce świadczy o wysokiej stabilności wyników między foldami.
+Regresja logistyczna dominuje pod względem Recall, lecz jej Precision jest wielokrotnie niższa od modeli drzewiastych – sygnał nadmiernej liczby fałszywych alarmów.
+Las Losowy i XGBoost wykazują porównywalną stabilność, przy czym Las Losowy uzyskuje nieco lepszy F1-Score.
 Na podstawie tych wyników **Las Losowy** zostaje wybrany jako model wiodący do dalszej ewaluacji i wdrożenia.
 
 ## Ewaluacja modeli uczenia maszynowego oraz ich kalibracja
 
-Po wytrenowaniu modeli na zbalansowanym zbiorze treningowym (wykorzystującym technikę SMOTE), przeprowadzono ich ewaluację na surowym zbiorze testowym.
-Pozwoliło to na sprawdzenie, jak modele radzą sobie z rzeczywistym rozkładem danych (gdzie hity są rzadkością).
-
-Do oceny jakości klasyfikacji wykorzystano zestaw metryk: **Accuracy** (Dokładność), **Precision** (Precyzja), **Recall** (Czułość) oraz **F1-Score**.
-Dodatkowo wygenerowano krzywe **ROC** oraz obliczono pole pod krzywą (**ROC-AUC**), które jest odporne na niezbalansowanie klas.
+Po wytrenowaniu modeli na zbalansowanym zbiorze treningowym przeprowadzono ich ewaluację na surowym zbiorze testowym, sprawdzając zachowanie przy rzeczywistym, niezbalansowanym rozkładzie klas.
+Do oceny jakości klasyfikacji wykorzystano zestaw metryk: **Accuracy**, **Precision**, **Recall** oraz **F1-Score**, a także krzywe **ROC** i pole pod krzywą (**ROC-AUC**).
 
 ```{r}
-library(yardstick)
-library(dplyr)
-library(ggplot2)
-library(probably)
-
 multi_metric <- metric_set(accuracy, precision, recall, f_meas)
 
-# Tabela zbiorcza metryk na zbiorze testowym
 bind_rows(
   log_preds %>% multi_metric(truth = is_hit, estimate = .pred_class, event_level = "second") %>% mutate(Model = "Regresja Logistyczna"),
   rf_preds  %>% multi_metric(truth = is_hit, estimate = .pred_class, event_level = "second") %>% mutate(Model = "Las Losowy"),
@@ -458,7 +405,6 @@ bind_rows(
   tidyr::pivot_wider(names_from = Metryka, values_from = Wartość) %>%
   knitr::kable(caption = "Metryki klasyfikacji na zbiorze testowym")
 
-# Tabela ROC-AUC
 bind_rows(
   log_preds %>% roc_auc(truth = is_hit, .pred_1, event_level = "second") %>% mutate(Model = "Regresja Logistyczna"),
   rf_preds  %>% roc_auc(truth = is_hit, .pred_1, event_level = "second") %>% mutate(Model = "Las Losowy"),
@@ -468,7 +414,6 @@ bind_rows(
   mutate(`ROC-AUC` = round(`ROC-AUC`, 4)) %>%
   knitr::kable(caption = "Wartości ROC-AUC na zbiorze testowym")
 
-# Krzywe ROC
 log_roc <- log_preds %>% roc_curve(truth = is_hit, .pred_1, event_level = "second") %>% mutate(model = "Regresja Logistyczna")
 rf_roc  <- rf_preds  %>% roc_curve(truth = is_hit, .pred_1, event_level = "second") %>% mutate(model = "Las Losowy")
 xgb_roc <- xgb_preds %>% roc_curve(truth = is_hit, .pred_1, event_level = "second") %>% mutate(model = "XGBoost")
@@ -489,7 +434,6 @@ bind_rows(log_roc, rf_roc, xgb_roc) %>%
     "XGBoost"              = "forestgreen"
   ))
 
-# Optymalizacja progu odcięcia dla Lasu Losowego
 threshold_data <- rf_preds %>%
   threshold_perf(truth = is_hit, estimate = .pred_1, 
                  thresholds = seq(0.1, 0.9, by = 0.05), 
@@ -504,19 +448,17 @@ ggplot(threshold_data, aes(x = .threshold, y = .estimate)) +
        y = "Wartość metryki F1-Score")
 ```
 
-**Wniosek z tabeli metryk:** Tabela jednoznacznie pokazuje kompromis między Precision a Recall dla każdego modelu. Regresja logistyczna osiąga bardzo wysokie Recall (wykrywa większość hitów), ale jej Precision jest drastycznie niska – oznacza to, że niemal każdy utwór jest przez nią klasyfikowany jako potencjalny hit, co czyni ją bezużyteczną praktycznie. Las Losowy osiąga najlepszy balans: wyższa Precision przy akceptowalnym Recall przekłada się na najwyższy F1-Score spośród wszystkich modeli.
-
-**Wniosek z tabeli ROC-AUC:** Wartości ROC-AUC powyżej 0.9 dla wszystkich modeli świadczą o tym, że każdy z nich posiada znaczącą zdolność do rankingowania hitów powyżej nie-hitów – jest jednak w tym zakresie mylące. Wysoki AUC regresji logistycznej wynika z jej zdolności do generowania płynnych, dobrze rozłożonych prawdopodobieństw, lecz nie przekłada się to na użyteczną klasyfikację przy progu 0.5. Las Losowy i XGBoost łączą wysoki AUC z lepszą jakością klasyfikacji binarnej, co czyni je zdecydowanie lepszymi modelami dla tego problemu.
+**Wniosek:** Tabela metryk pokazuje kompromis między Precision a Recall: regresja logistyczna osiąga bardzo wysokie Recall, lecz jej Precision jest drastycznie niska – model klasyfikuje niemal każdy utwór jako hit, co czyni go bezużytecznym w praktyce.
+Las Losowy osiąga najlepszy balans: wyższa Precision (0.204) przy akceptowalnym Recall przekłada się na najwyższy F1-Score.
+Wysoki ROC-AUC wszystkich modeli (>0.9) świadczy o zdolności do rankingowania hitów, jednak w przypadku regresji logistycznej nie przekłada się to na użyteczną klasyfikację przy progu 0.5.
+Wykres optymalizacji progu potwierdza, że domyślny próg 0.5 nie jest optymalny dla Lasu Losowego – maksimum F1-Score osiągane jest przy wyższej wartości progu.
 
 ### Kalibracja prawdopodobieństw
 
-Krzywa kalibracji (*calibration plot*) pokazuje, jak dobrze prawdopodobieństwa predykcji modelu odpowiadają rzeczywistym częstościom obserwowanych klas.
+Krzywa kalibracji (*calibration plot*) pokazuje, jak dobrze prawdopodobieństwa predykcji odpowiadają rzeczywistym częstościom obserwowanych klas.
 Idealnie skalibrowany model leży na linii przekątnej (prawdopodobieństwo predykowane = obserwowana częstość).
-Odchylenia od tej linii informują o tym, czy model jest zbyt optymistyczny (krzywa powyżej przekątnej) lub zbyt pesymistyczny (poniżej przekątnej).
 
 ```{r}
-library(probably)
-
 cal_rf <- cal_plot_breaks(
   rf_preds, truth = is_hit, estimate = .pred_1,
   event_level = "second", num_breaks = 10
@@ -532,28 +474,12 @@ cal_xgb <- cal_plot_breaks(
   event_level = "second", num_breaks = 10
 ) + labs(title = "Kalibracja – XGBoost") + theme_minimal()
 
-library(patchwork)
 cal_rf + cal_log + cal_xgb
 ```
 
-**Wniosek z kalibracji:** Regresja logistyczna wykazuje wyraźne przekalibrowanie – dla niskich prawdopodobieństw predykuje zbyt wysokie wartości (efekt agresywnego SMOTE), co tłumaczy jej bardzo niską precyzję.
-Las Losowy i XGBoost są lepiej skalibrowane w środkowym zakresie prawdopodobieństw, lecz w obszarze wysokich wartości (\>0.7) mogą niedoszacowywać rzeczywistej częstości hitów ze względu na naturalną rzadkość tej klasy w danych testowych.
+**Wniosek:** Regresja logistyczna wykazuje wyraźne przekalibrowanie – dla niskich prawdopodobieństw predykuje zbyt wysokie wartości (efekt agresywnego SMOTE w połączeniu z liniową granicą decyzyjną), co bezpośrednio tłumaczy jej bardzo niską precyzję.
+Las Losowy i XGBoost są lepiej skalibrowane w środkowym zakresie prawdopodobieństw, lecz w obszarze wysokich wartości (>0.7) mogą niedoszacowywać rzeczywistej częstości hitów ze względu na naturalną rzadkość tej klasy w danych testowych.
 Wyniki uzasadniają optymalizację progu odcięcia dla modelu wiodącego.
-
-**Wnioski z ewaluacji i porównania modeli:**
-
-1.  **Regresja Logistyczna:** Mimo wysokiego wskaźnika ROC-AUC (0.919), model ten w praktyce wykazuje bardzo niską użyteczność.
-    Bardzo wysoka czułość (Recall = 0.826) sugeruje, że model "widzi hity wszędzie".
-    Skutkuje to ekstremalnie niską precyzją (0.072) – na każdy poprawnie wskazany hit przypada kilkanaście fałszywych alarmów.
-    Jest to efekt uboczny SMOTE, który w połączeniu z liniowym charakterem modelu doprowadził do nadmiernego rozszerzenia granicy decyzyjnej klasy pozytywnej.
-
-2.  **Modele Drzewiaste (Las Losowy i XGBoost):** Wykazały się znacznie większą stabilnością.
-    Las Losowy osiągnął najwyższy F1-Score (0.275).
-    Choć jego czułość jest niższa niż w regresji, to precyzja (0.204) jest prawie 3-krotnie wyższa.
-    Oznacza to, że model ten znacznie lepiej separuje "prawdziwe hity" od utworów, które jedynie brzmią podobnie do nich.
-
-3.  **Optymalizacja progu:** Analiza wykresu optymalizacji progu dla Lasu Losowego pokazuje, że domyślny próg 0.5 nie jest optymalny dla F1-Score.
-    Maksimum metryki osiągane jest dla wyższych progów prawdopodobieństwa, co sugeruje, że model jest z natury nieco zbyt optymistyczny po procesie SMOTE i warto podnieść poprzeczkę dla klasyfikacji utworu jako hit.
 
 ## Przeprowadzenie analizy popełnianych błędów przez wykorzystane modele predykcyjne
 
@@ -562,13 +488,10 @@ Analiza macierzy pomyłek (Confusion Matrix) pozwala na precyzyjne zidentyfikowa
 Głównym problemem wszystkich modeli jest wysoka liczba błędów **False Positive** (klasyfikowanie przeciętnych utworów jako hity). Zjawisko to ma głębokie uzasadnienie merytoryczne:
 
 - **Pułapka akustyczna:** Wiele utworów jest produkowanych zgodnie z obecnymi trendami (wysoka głośność, taneczność), co sprawia, że w przestrzeni cech akustycznych są one identyczne z hitami.
-- **Brakujące zmienne:** Model nie wie, czy utwór był promowany w radiu, czy artysta ma miliony fanów, ani czy piosenka stała się wiralem na TikToku. Te "ukryte zmienne" sprawiają, że utwory o identycznych parametrach audio mają skrajnie różną popularność.
-- **Błędy False Negative:** Są rzadsze, ale równie istotne – dotyczą hitów, które "brzmią inaczej" (np. ballady akustyczne w zalewie muzyki elektronicznej). Model, ucząc się na trendach, ma trudności z wyłapaniem takich wyjątków.
+- **Brakujące zmienne:** Model nie wie, czy utwór był promowany w radiu, czy artysta ma miliony fanów, ani czy piosenka stała się wiralem w mediach społecznościowych. Te "ukryte zmienne" sprawiają, że utwory o identycznych parametrach audio mają skrajnie różną popularność.
+- **Błędy False Negative:** Dotyczą hitów, które "brzmią inaczej" (np. ballady akustyczne w zalewie muzyki elektronicznej) – model, ucząc się na trendach, ma trudności z wyłapaniem takich wyjątków.
 
 ```{r}
-library(yardstick)
-library(ggplot2)
-
 rf_preds %>%
   conf_mat(truth = is_hit, estimate = .pred_class) %>%
   autoplot(type = "heatmap") +
@@ -589,9 +512,9 @@ log_preds %>%
 ```
 
 **Wniosek:** Zestawienie macierzy pomyłek ujawnia fundamentalną różnicę w stylu błędów obu modeli.
-Regresja logistyczna generuje ogromną liczbę błędów False Positive – model jest zbyt "optymistyczny" i przypisuje status hitu bardzo szerokim grupom utworów, co skutkuje niską precyzją przy względnie wysokiej czułości.
-Las losowy zachowuje się odwrotnie – jest bardziej konserwatywny i rzadziej klasy pozytywnej, przez co ma wyższą precyzję przy niższej czułości.
-W praktycznym zastosowaniu model lasu losowego jest bezpieczniejszy: lepiej identyfikuje prawdziwe potencjalne hity, minimalizując ryzyko fałszywych rekomendacji, co jest istotne w kontekście decyzji biznesowych wytwórni muzycznej.
+Regresja logistyczna generuje ogromną liczbę błędów False Positive – model jest zbyt "optymistyczny" i przypisuje status hitu bardzo szerokim grupom utworów.
+Las losowy jest bardziej konserwatywny: rzadziej przypisuje klasę pozytywną, przez co osiąga wyższą precyzję przy niższej czułości.
+W praktycznym zastosowaniu model lasu losowego jest bezpieczniejszy – lepiej identyfikuje prawdziwe potencjalne hity, minimalizując ryzyko fałszywych rekomendacji w kontekście decyzji biznesowych wytwórni muzycznej.
 
 ## Analiza wyjaśnialności decyzji modeli predykcyjnych
 
@@ -600,9 +523,6 @@ Aby zrozumieć logikę stojącą za predykcjami wybranego modelu wiodącego (Las
 Informuje ona o tym, które zmienne najbardziej przyczyniają się do poprawy czystości węzłów w procesie budowania drzew.
 
 ```{r}
-library(vip)
-library(ggplot2)
-
 vip(rf_fit$fit, num_features = 20, geom = "col", 
     mapping = aes_string(fill = "Variable")) +
   theme_minimal() +
@@ -616,31 +536,15 @@ vip(rf_fit$fit, num_features = 20, geom = "col",
 
 1. **Dominacja parametrów audio:** Najważniejszymi predyktorami okazały się `instrumentalness` oraz `acousticness`. Sugeruje to, że dla popularności kluczowe jest to, czy utwór ma charakter "radiowy" (wokalny, elektronicznie przetworzony). Utwory czysto instrumentalne lub o surowym, akustycznym brzmieniu rzadziej przebijają się do progu popularności >= 75.
 2. **Parametry techniczne:** Wysoka pozycja `duration_ms` oraz `loudness` potwierdza rynkowe trendy – hity mają zazwyczaj określoną długość (ok. 3 minut) i są poddawane agresywnemu masteringowi (tzw. Loudness War).
-3. **Marginalizacja gatunków:** Co istotne, przynależność do konkretnego gatunku (`track_genre`) ma dla modelu mniejsze znaczenie niż parametry dźwiękowe. Najważniejszym gatunkiem okazał się `dance`, co jest spójne z obecną dominacją muzyki tanecznej w głównym nurcie.
-
-## Podsumowanie i sformułowanie wniosków
-
-Projekt miał na celu zbadanie, w jakim stopniu metadane akustyczne Spotify pozwalają przewidzieć sukces komercyjny utworu.
-Przeprowadzona analiza prowadzi do następujących konkluzji:
-
-1.  **Możliwości predykcyjne:** Budowa modelu o wysokiej precyzji (Precision) jest niemożliwa przy użyciu wyłącznie cech akustycznych. Choć model potrafi skutecznie wyselekcjonować "kandydatów na hity" (wysoki ROC-AUC), to rzeczywisty sukces zależy od czynników pozamuzycznych, takich jak kampanie marketingowe, renoma artysty czy trendy w mediach społecznościowych.
-2.  **Przewaga modeli nieliniowych:** Algorytmy zespołowe (Random Forest, XGBoost) zdecydowanie lepiej radzą sobie ze specyfiką danych muzycznych niż modele liniowe. Pozwalają one na uchwycenie złożonych interakcji między głośnością, energią a tanecznością, które wspólnie budują "potencjał komercyjny".
-3.  **Rekomendacje praktyczne:** Z punktu widzenia wytwórni muzycznej, model taki jak Las Losowy może służyć jako narzędzie do wstępnej filtracji utworów ("akustyczny filtr jakości"), jednak ostateczna decyzja o inwestycji musi być poparta analizą trendów rynkowych i potencjału wizerunkowego twórcy.
+3. **Marginalizacja gatunków:** Przynależność do konkretnego gatunku (`track_genre`) ma dla modelu mniejsze znaczenie niż parametry dźwiękowe. Najważniejszym gatunkiem okazał się `dance`, co jest spójne z obecną dominacją muzyki tanecznej w głównym nurcie.
 
 ## Podstawowe wdrożenie modelu wybranego na podstawie przeprowadzonej ewaluacji oraz przeprowadzenie testu predykcyjnego
 
-Ostatnim etapem projektu było środowiskowe wdrożenie wybranego modelu Lasu Losowego i weryfikacja jego działania w praktyce.
-W tym celu stworzono syntetyczny profil "nowej piosenki", przypisując jej cechy charakterystyczne dla współczesnych hitów radiowych (wysoka taneczność, duża głośność, wysoka energia, brak instrumentalności, gatunek pop).
-Nowa obserwacja została przepuszczona przez zdefiniowaną wcześniej recepturę (standaryzacja, kodowanie), a następnie poddana predykcji.
-
-Dodatkowo, wykorzystano narzędzia wyjaśnialności lokalnej (DALEX), generując wykres dekompozycji predykcji (Waterfall plot) dla testowanego utworu.
-Obrazuje on bezpośredni wpływ poszczególnych atrybutów nowej obserwacji na finalną decyzję podjętą przez model.
+Ostatnim etapem projektu było wdrożenie wybranego modelu Lasu Losowego i weryfikacja jego działania w praktyce.
+Stworzono syntetyczny profil "nowej piosenki" z cechami charakterystycznymi dla współczesnych hitów radiowych (wysoka taneczność, duża głośność, wysoka energia, brak instrumentalności, gatunek pop) i przepuszczono go przez zdefiniowaną wcześniej recepturę transformacji.
+Dodatkowo, z wykorzystaniem narzędzi wyjaśnialności lokalnej (DALEX), wygenerowano wykres dekompozycji predykcji (Waterfall plot), obrazujący bezpośredni wpływ poszczególnych atrybutów nowej obserwacji na finalną decyzję modelu.
 
 ```{r}
-library(dplyr)
-library(DALEX)
-library(DALEXtra)
-
 nowa_piosenka <- tibble(
   duration_ms = 210000,
   danceability = 0.85,
@@ -688,11 +592,19 @@ plot(rf_parts) +
   theme_minimal()
 ```
 
-**Wniosek z tabeli predykcji:** Tabela prezentuje wynik klasyfikacji nowej piosenki: predykowaną klasę oraz rozkład prawdopodobieństwa między obiema klasami. Wysokie P(Hit) – znacznie powyżej domyślnego progu 0.5 – oznacza, że model jest pewny swojej decyzji, nie tylko nominalnie przekracza próg. Zestawienie P(Brak hitu) i P(Hit) pokazuje, jak pewnie model lokuje obserwację po stronie klasy pozytywnej, co jest cenną informacją biznesową – im wyższe P(Hit), tym silniejszy "akustyczny sygnał" hitu w danym profilu.
+**Wniosek:** Model Lasu Losowego poprawnie zakwalifikował syntetyczny profil "piosenki pop" jako kandydata na hit.
+Wysokie P(Hit) – znacznie powyżej progu 0.5 – wskazuje na pewność decyzji, nie tylko nominalne jej przekroczenie.
+Wykres wodospadowy dostarcza wyjaśnienia lokalnego tej konkretnej predykcji: widać, które cechy (np. niska `instrumentalness`, wysoka `loudness`, gatunek `pop`) "pchnęły" decyzję modelu w kierunku klasy pozytywnej, a które ją hamowały.
+Taka interpretacja czyni model nie tylko narzędziem predykcji, ale też źródłem rekomendacji artystycznych – wytwórnia może identyfikować, które atrybuty nowo nagranego utworu wymagają korekty, aby zwiększyć jego szanse komercyjne.
 
-**Wniosek ogólny:** Test wdrożeniowy pokazuje, że model Lasu Losowego poprawnie zakwalifikował syntetyczny profil "piosenki pop" jako kandydata na hit, przypisując mu wysokie prawdopodobieństwo klasy 1.
-Wykres wodospadowy (Waterfall / Break Down) dostarcza wyjaśnienia lokalnego tej konkretnej predykcji: widać, które cechy nowej piosenki (np. niska `instrumentalness`, wysoka `loudness`, gatunek `pop`) "pchnęły" decyzję modelu w kierunku klasy pozytywnej, a które ją hamowały.
-Taka interpretacja czyni model nie tylko narzędziem predykcji, ale też źródłem rekomendacji artystycznych – wytwórnia może na tej podstawie identyfikować, które atrybuty nowo nagranego utworu wymagają korekty, aby zwiększyć jego szanse komercyjne.
+## Podsumowanie i sformułowanie wniosków
+
+Projekt miał na celu zbadanie, w jakim stopniu metadane akustyczne Spotify pozwalają przewidzieć sukces komercyjny utworu.
+Przeprowadzona analiza prowadzi do następujących konkluzji:
+
+1.  **Możliwości predykcyjne:** Budowa modelu o wysokiej precyzji jest niemożliwa przy użyciu wyłącznie cech akustycznych. Choć model potrafi skutecznie wyselekcjonować "kandydatów na hity" (wysoki ROC-AUC), to rzeczywisty sukces zależy od czynników pozamuzycznych, takich jak kampanie marketingowe, renoma artysty czy trendy w mediach społecznościowych.
+2.  **Przewaga modeli nieliniowych:** Algorytmy zespołowe (Random Forest, XGBoost) zdecydowanie lepiej radzą sobie ze specyfiką danych muzycznych niż modele liniowe. Pozwalają one na uchwycenie złożonych interakcji między głośnością, energią a tanecznością, które wspólnie budują "potencjał komercyjny".
+3.  **Rekomendacje praktyczne:** Z punktu widzenia wytwórni muzycznej, model taki jak Las Losowy może służyć jako narzędzie do wstępnej filtracji utworów ("akustyczny filtr jakości"), jednak ostateczna decyzja o inwestycji musi być poparta analizą trendów rynkowych i potencjału wizerunkowego twórcy.
 
 ## Literatura
 
