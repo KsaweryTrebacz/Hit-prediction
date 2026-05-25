@@ -1,6 +1,5 @@
 ---
 title: "Predykcja hitów muzycznych na podstawie danych Spotify"
-date: "18 maja 2026"
 output:
   html_document:
     theme: flatly
@@ -39,7 +38,7 @@ Zbiór ten zawiera wyczerpujące metadane dotyczące tysięcy utworów muzycznyc
 Obejmuje on zróżnicowane atrybuty, w tym parametry akustyczne wyliczane przez algorytmy Spotify (np. taneczność, energia, akustyczność), informacje o popularności, przynależność do gatunków muzycznych oraz podstawowe dane identyfikacyjne (tytuł, artysta, rok wydania).
 Wybór tego zbioru podyktowany jest jego bogactwem w informacje o naturze zarówno numerycznej, jak i kategorycznej, co pozwala na zastosowanie szerokiego spektrum technik eksploracji danych.
 
-1.  Zmienne objaśniane (Target):
+1.  Zmienne objaśniane:
 
 - popularity (numeryczna): Skala od 0 do 100 wyliczana przez algorytmy Spotify, oceniająca aktualną popularność utworu (w dużej mierze oparta na całkowitej liczbie odtworzeń oraz tym, jak niedawno miały one miejsce).
 
@@ -98,7 +97,7 @@ Wybór tego zbioru podyktowany jest jego bogactwem w informacje o naturze zarów
 Na potrzeby tej analizy zdefiniowano, że utwór staje się hitem (zmienna docelowa przyjmuje wartość 1), gdy jego wskaźnik `popularity` (popularność obliczana przez algorytmy Spotify w skali od 0 do 100) jest większy lub równy 75.
 W przeciwnym razie utwór klasyfikowany jest jako "brak hitu" (wartość 0).
 
-**Charakterystyka zbioru:** Zbiór charakteryzuje się występowaniem silnego niezbalansowania klas (ang. *class imbalance*), ponieważ utworów o bardzo wysokiej popularności jest w populacji znacznie mniej niż utworów przeciętnych.
+**Charakterystyka zbioru:** Zbiór charakteryzuje się występowaniem silnego niezbalansowania klas, ponieważ utworów o bardzo wysokiej popularności jest w populacji znacznie mniej niż utworów przeciętnych.
 Dane zawierają zmienne numeryczne ciągłe (np. tempo, loudness), zmienne kategoryczne (np. track_genre, key) oraz zmienne logiczne (np. explicit).
 Wymaga to odpowiedniego przygotowania, w tym kodowania zmiennych jakościowych, skalowania oraz potencjalnie balansowania klas przed etapem uczenia modeli.
 
@@ -155,27 +154,27 @@ df <- df %>%
 ```
 
 **Wniosek:** Po przeprowadzeniu czyszczenia uzyskano spójny, pozbawiony duplikatów i braków zbiór danych, gotowy do dalszej analizy.
-Eliminacja zmiennej `popularity` jest krytycznym krokiem zapobiegającym wyciekowi danych (data leakage) – bez tego modelu trenowałby się de facto na odpowiedzi.
+Eliminacja zmiennej `popularity` jest krytycznym krokiem zapobiegającym wyciekowi danych – bez tego modelu trenowałby się de facto na odpowiedzi.
 Usunięcie kolumn tekstowych i identyfikatorów pozwala skupić się wyłącznie na cechach o potencjale predykcyjnym.
 Wynikowy zbiór zawiera zarówno zmienne numeryczne (parametry audio), jak i kategoryczne (`track_genre`, `key`, `mode`), co determinuje dalsze kroki przetwarzania w pipeline'u modelowania.
 
 ## Omówienie oraz zwizualizowanie istotnych zależności w analizowanym zbiorze danych
 
-W celu lepszego zrozumienia struktury danych oraz relacji między zmiennymi przeprowadzono eksploracyjną analizę danych (EDA) z wykorzystaniem technik wizualizacji.
+W celu lepszego zrozumienia struktury danych oraz relacji między zmiennymi przeprowadzono eksploracyjną analizę danych z wykorzystaniem technik wizualizacji.
 Skupiono się na trzech kluczowych aspektach:
 
 **1. Rozkład zmiennej docelowej:** Wykres słupkowy ilustrujący rozkład zmiennej `is_hit` ukazuje drastyczne niezbalansowanie klas.
 Zdecydowana większość obserwacji w zbiorze należy do klasy większościowej (0 - "brak hitu"), podczas gdy utwory zaklasyfikowane jako hity (1) stanowią jedynie niewielki ułamek populacji (ok. 5-7%).
 
-*Wniosek:* Skrajna asymetria klas sugeruje, że model nauczony na surowych danych mógłby osiągnąć wysoką dokładność (Accuracy) poprzez proste przypisywanie wszystkim utworom klasy "0".
-Wymusza to w późniejszych etapach zastosowanie technik balansowania (SMOTE) oraz metryk oceny skupionych na klasie mniejszościowej (Precision, Recall, F1-score).
+*Wniosek:* Skrajna asymetria klas sugeruje, że model nauczony na surowych danych mógłby osiągnąć wysoką dokładność poprzez proste przypisywanie wszystkim utworom klasy "0".
+Wymusza to w późniejszych etapach zastosowanie technik balansowania oraz metryk oceny skupionych na klasie mniejszościowej.
 
 **2. Macierz korelacji:** Analiza korelogramu dla zmiennych numerycznych ujawnia kilka silnych zależności, które są spójne z intuicją muzyczną.
 Występuje bardzo silna, dodatnia korelacja pomiędzy zmiennymi `energy` (energia) oraz `loudness` (głośność).
 Utwory głośniejsze są przez algorytmy Spotify klasyfikowane jako bardziej energetyczne.
 Zmienna `acousticness` (akustyczność) jest silnie ujemnie skorelowana zarówno z energią, jak i głośnością, co odzwierciedla techniczną różnicę między instrumentami akustycznymi a zelektronizowaną produkcją współczesną.
 
-*Wniosek:* Identyfikacja silnie skorelowanych par zmiennych objaśniających (multikolinearność) jest sygnałem, że proste modele liniowe mogą mieć trudności z poprawną estymacją wag.
+*Wniosek:* Identyfikacja silnie skorelowanych par zmiennych objaśniających jest sygnałem, że proste modele liniowe mogą mieć trudności z poprawną estymacją wag.
 W procesie modelowania preferowane będą algorytmy odporne na to zjawisko, takie jak lasy losowe, lub konieczne będzie usunięcie redundantnych cech.
 
 **3. Redukcja wymiarów (PCA):** Aby zwizualizować trudność postawionego problemu analitycznego, przeprowadzono Analizę Głównych Składowych (PCA) dla numerycznych cech akustycznych.
